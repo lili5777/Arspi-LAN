@@ -7,7 +7,9 @@ use App\Models\KategoriDetail;
 use App\Models\TahunKategoriDetail;
 use App\Models\Berkas;
 use App\Models\User;
+// use Illuminate\Container\Attributes\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -28,8 +30,10 @@ class KategoriController extends Controller
         $totalSize = Berkas::sum('size');
         $totalSizeGB = $totalSize > 0 ? number_format($totalSize / (1024 * 1024 * 1024), 2) : 0;
         $totalUsers = 8;
+        $userRole = Auth::user()->role->name ?? 'user';
+        
 
-        return view('admin.dashboard', compact('kategoris', 'totalBerkas', 'totalSize', 'totalSizeGB', 'totalUsers'));
+        return view('admin.dashboard', compact('kategoris', 'totalBerkas', 'totalSize', 'totalSizeGB', 'totalUsers','userRole'));
     }
 
     /**

@@ -630,6 +630,9 @@
 
 @section('scripts')
     <script>
+
+
+
         // Icons
         const iconOptions = [
             'fas fa-folder', 'fas fa-folder-open', 'fas fa-file-alt', 'fas fa-file-pdf',
@@ -746,8 +749,22 @@
         }
 
         function createCategoryCard(category, index) {
+            const userRole = '{{ $userRole }}';
+            const canEdit = userRole === 'admin';
             const card = document.createElement('div');
             card.className = 'category-card';
+
+            const editButton = canEdit ? `
+            <button class="btn-icon edit" data-id="${category.id}" title="Edit">
+                <i class="fas fa-edit"></i>
+            </button>
+            ` :``;
+
+            const deleteButton = canEdit ? `
+            <button class="btn-icon delete" data-id="${category.id}" title="Hapus">
+                <i class="fas fa-trash"></i>
+            </button>
+            `:``;
 
             const totalDocs = category.total_documents ||
                 (category.documents_count ||
@@ -762,12 +779,8 @@
                         <i class="${category.icon || 'fas fa-folder'}"></i>
                     </div>
                     <div class="card-actions">
-                        <button class="btn-icon edit" data-id="${category.id}" title="Edit">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn-icon delete" data-id="${category.id}" title="Hapus">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                        ${editButton}
+                        ${deleteButton}
                     </div>
                 </div>
                 <div class="category-info">
@@ -783,15 +796,21 @@
                 </div>
             `;
 
-            card.querySelector('.edit').addEventListener('click', (e) => {
-                e.stopPropagation();
-                openEditModal(category.id);
-            });
+            const editBtn = card.querySelector('.edit');
+            if (editBtn) {
+                editBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openEditModal(category.id);
+                });
+            }
 
-            card.querySelector('.delete').addEventListener('click', (e) => {
-                e.stopPropagation();
-                deleteCategory(category.id);
-            });
+            const deleteBtn = card.querySelector('.delete');
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    deleteCategory(category.id);
+                });
+            }
 
             card.addEventListener('click', (e) => {
                 if (!e.target.closest('.card-actions')) {

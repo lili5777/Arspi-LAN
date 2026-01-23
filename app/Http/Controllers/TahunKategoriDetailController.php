@@ -7,6 +7,7 @@ use App\Models\KategoriDetail;
 use App\Models\TahunKategoriDetail;
 use App\Models\Berkas;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -30,12 +31,15 @@ class TahunKategoriDetailController extends Controller
             return $tahun->berkas->sum('size');
         });
 
+        $userRole = Auth::user()->role->name ?? 'user';
+
         return view('admin.tahun-kategori-detail', compact(
             'kategori',
             'kategoriDetail',
             'totalTahun',
             'totalBerkas',
-            'totalSize'
+            'totalSize',
+            'userRole'
         ));
     }
 

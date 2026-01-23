@@ -793,6 +793,20 @@
         function createDetailCard(detail) {
             const card = document.createElement('div');
             card.className = 'detail-card';
+            const userRole = '{{ $userRole }}';
+            const canEdit = userRole === 'admin';
+
+            const editButton = canEdit ? `
+            <button class="btn-icon edit" data-id="${detail.id}" title="Edit">
+                <i class="fas fa-edit"></i>
+            </button>
+            ` : ``;
+
+            const deleteButton = canEdit ? `
+            <button class="btn-icon delete" data-id="${detail.id}" title="Hapus">
+                <i class="fas fa-trash"></i>
+            </button>
+            `: ``;
 
             const totalBerkas = detail.berkas_count ||
                 (detail.tahun_kategori_details ?
@@ -806,12 +820,8 @@
                             <i class="${detail.icon || 'fas fa-folder'}"></i>
                         </div>
                         <div class="card-actions">
-                            <button class="btn-icon edit" data-id="${detail.id}" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon delete" data-id="${detail.id}" title="Hapus">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                            ${editButton}
+                            ${deleteButton}
                         </div>
                     </div>
                     <div class="detail-info">
@@ -827,15 +837,21 @@
                     </div>
                 `;
 
-            card.querySelector('.edit').addEventListener('click', (e) => {
-                e.stopPropagation();
-                openEditModal(detail.id);
-            });
+            const editBtn = card.querySelector('.edit');
+            if (editBtn) {
+                editBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openEditModal(detail.id);
+                });
+            }
 
-            card.querySelector('.delete').addEventListener('click', (e) => {
-                e.stopPropagation();
-                deleteDetail(detail.id);
-            });
+            const deleteBtn = card.querySelector('.delete');
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    deleteDetail(detail.id);
+                });
+            }
 
             card.addEventListener('click', (e) => {
                 if (!e.target.closest('.card-actions')) {

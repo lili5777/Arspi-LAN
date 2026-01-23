@@ -7,6 +7,7 @@ use App\Models\KategoriDetail;
 use App\Models\TahunKategoriDetail;
 use App\Models\Berkas;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -29,7 +30,9 @@ class KategoriDetailController extends Controller
             });
         });
 
-        return view('admin.kategori-detail', compact('kategori', 'totalDetails', 'totalTahun', 'totalBerkas'));
+        $userRole = Auth::user()->role->name ?? 'user';
+
+        return view('admin.kategori-detail', compact('kategori', 'totalDetails', 'totalTahun', 'totalBerkas','userRole'));
     }
 
     /**

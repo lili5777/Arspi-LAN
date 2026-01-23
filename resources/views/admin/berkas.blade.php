@@ -1011,6 +1011,20 @@
         function createBerkasRow(berkas) {
             const row = document.createElement('tr');
             const fileIcon = getFileIcon(berkas.name);
+            const userRole = '{{ $userRole }}';
+            const canEdit = userRole === 'admin';
+
+            const editButton = canEdit ? `
+            <button class="btn-icon edit" data-id="${berkas.id}" title="Edit">
+                <i class="fas fa-edit"></i>
+            </button>
+            ` : ``;
+
+            const deleteButton = canEdit ? `
+            <button class="btn-icon delete" data-id="${berkas.id}" title="Hapus">
+                <i class="fas fa-trash"></i>
+            </button>
+            `: ``;
 
             row.innerHTML = `
                     <td>
@@ -1035,12 +1049,8 @@
                             <button class="btn-icon download" data-id="${berkas.id}" title="Download">
                                 <i class="fas fa-download"></i>
                             </button>
-                            <button class="btn-icon edit" data-id="${berkas.id}" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon delete" data-id="${berkas.id}" title="Hapus">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                            ${editButton}
+                            ${deleteButton}
                         </div>
                     </td>
                 `;
@@ -1051,15 +1061,21 @@
                 downloadBerkas(berkas.id);
             });
 
-            row.querySelector('.edit').addEventListener('click', (e) => {
-                e.stopPropagation();
-                openEditModal(berkas.id);
-            });
+            const editBtn = row.querySelector('.edit');
+            if (editBtn) {
+                editBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openEditModal(berkas.id);
+                });
+            }
 
-            row.querySelector('.delete').addEventListener('click', (e) => {
-                e.stopPropagation();
-                deleteBerkas(berkas.id);
-            });
+            const deleteBtn = row.querySelector('.delete');
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    deleteBerkas(berkas.id);
+                });
+            }
 
             return row;
         }
@@ -1072,10 +1088,7 @@
                                 <i class="fas fa-folder-open"></i>
                                 <h3>Belum Ada Berkas</h3>
                                 <p>Mulai dengan mengupload berkas pertama untuk tahun ini.</p>
-                                <button class="btn btn-primary" onclick="document.getElementById('addBerkasBtn').click()">
-                                    <i class="fas fa-cloud-upload-alt"></i>
-                                    Upload Berkas
-                                </button>
+
                             </div>
                         </td>
                     </tr>

@@ -887,6 +887,20 @@
         function createTahunCard(tahun) {
             const card = document.createElement('div');
             card.className = 'tahun-card';
+            const userRole = '{{ $userRole }}';
+            const canEdit = userRole === 'admin';
+
+            const editButton = canEdit ? `
+            <button class="btn-icon edit" data-id="${tahun.id}" title="Edit">
+                <i class="fas fa-edit"></i>
+            </button>
+            ` : ``;
+
+            const deleteButton = canEdit ? `
+            <button class="btn-icon delete" data-id="${tahun.id}" title="Hapus">
+                <i class="fas fa-trash"></i>
+            </button>
+            `: ``;
 
             const berkasCount = tahun.berkas_count || 0;
             const totalSize = tahun.total_size || 0;
@@ -903,12 +917,8 @@
                         </div>
                     </div>
                     <div class="tahun-actions">
-                        <button class="btn-icon edit" data-id="${tahun.id}" title="Edit">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn-icon delete" data-id="${tahun.id}" title="Hapus">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                        ${editButton}
+                        ${deleteButton}
                     </div>
                 </div>
                 <div class="tahun-card-body">
@@ -951,15 +961,21 @@
             `;
 
             // Event listeners
-            card.querySelector('.edit').addEventListener('click', (e) => {
-                e.stopPropagation();
-                openEditModal(tahun.id);
-            });
+            const editBtn = card.querySelector('.edit');
+            if (editBtn) {
+                editBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openEditModal(tahun.id);
+                });
+            }
 
-            card.querySelector('.delete').addEventListener('click', (e) => {
-                e.stopPropagation();
-                deleteTahun(tahun.id);
-            });
+            const deleteBtn = card.querySelector('.delete');
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    deleteTahun(tahun.id);
+                });
+            }
 
             card.addEventListener('click', (e) => {
                 if (!e.target.closest('.tahun-actions')) {
