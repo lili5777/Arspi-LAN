@@ -30,7 +30,9 @@ class AuthController extends Controller
         // Cek kredensial untuk login
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();  // Regenerasi session untuk keamanan
-            return redirect()->intended('dashboard'); // Redirect ke dashboard jika berhasil login
+
+            // Redirect ke dashboard setelah berhasil login
+            return redirect()->route('dashboard')->with('success', 'Selamat datang, ' . Auth::user()->name . '!');
         }
 
         // Jika login gagal, kembali dengan error
@@ -43,6 +45,7 @@ class AuthController extends Controller
         Auth::logout();
         $request->session()->invalidate();  // Hapus session
         $request->session()->regenerateToken();  // Regenerasi token CSRF
-        return redirect('/');  // Arahkan kembali ke halaman login setelah logout
+
+        return redirect()->route('login')->with('success', 'Anda telah berhasil logout');  // Arahkan kembali ke halaman login setelah logout
     }
 }

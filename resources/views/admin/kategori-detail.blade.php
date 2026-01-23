@@ -1,11 +1,77 @@
 @extends('admin.partials.layout')
 
-@section('title', 'Kategori')
-@section('page-title', 'Digital Archive')
-@section('page-subtitle', 'Manajemen Kategori Arsip • Dashboard Admin')
+@section('title', 'Detail Arsip - ' . $kategori->name)
+@section('page-title', $kategori->name)
+@section('page-subtitle', 'Manajemen Detail Arsip • ' . $kategori->desc)
 
 @section('styles')
     <style>
+        /* Breadcrumb */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            font-size: 13px;
+            color: var(--gray);
+        }
+
+        .breadcrumb a {
+            color: var(--primary-light);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--primary);
+        }
+
+        .breadcrumb-separator {
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        .breadcrumb-current {
+            color: white;
+            font-weight: 500;
+        }
+
+        /* Kategori Header */
+        .kategori-header {
+            background: var(--dark-light);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 32px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .kategori-header-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: var(--radius-lg);
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.1) 0%, rgba(67, 97, 238, 0.2) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-light);
+            font-size: 28px;
+        }
+
+        .kategori-header-info h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 6px;
+        }
+
+        .kategori-header-info p {
+            font-size: 14px;
+            color: var(--gray);
+            margin: 0;
+        }
+
         /* Stats Cards */
         .stats-grid {
             display: grid;
@@ -20,8 +86,6 @@
             border-radius: var(--radius-lg);
             padding: 22px;
             transition: all 0.2s ease;
-            position: relative;
-            overflow: hidden;
         }
 
         .stat-card:hover {
@@ -47,23 +111,6 @@
             justify-content: center;
             color: var(--primary-light);
             font-size: 16px;
-        }
-
-        .stat-trend {
-            font-size: 11px;
-            font-weight: 500;
-            padding: 4px 8px;
-            border-radius: var(--radius-full);
-            background: rgba(76, 201, 240, 0.1);
-            color: var(--success);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .stat-trend.negative {
-            background: rgba(247, 37, 133, 0.1);
-            color: var(--danger);
         }
 
         .stat-value {
@@ -114,15 +161,15 @@
             gap: 10px;
         }
 
-        /* Categories Grid */
-        .categories-grid {
+        /* Details Grid */
+        .details-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
             margin-bottom: 60px;
         }
 
-        .category-card {
+        .detail-card {
             background: var(--dark-light);
             border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: var(--radius-lg);
@@ -133,7 +180,7 @@
             cursor: pointer;
         }
 
-        .category-card:hover {
+        .detail-card:hover {
             border-color: rgba(67, 97, 238, 0.3);
             transform: translateY(-4px);
             box-shadow: var(--shadow-xl);
@@ -146,7 +193,7 @@
             margin-bottom: 18px;
         }
 
-        .category-icon {
+        .detail-icon {
             width: 48px;
             height: 48px;
             border-radius: var(--radius-md);
@@ -159,7 +206,7 @@
             transition: transform 0.2s ease;
         }
 
-        .category-card:hover .category-icon {
+        .detail-card:hover .detail-icon {
             transform: scale(1.1);
         }
 
@@ -171,7 +218,7 @@
             transition: all 0.2s ease;
         }
 
-        .category-card:hover .card-actions {
+        .detail-card:hover .card-actions {
             opacity: 1;
             transform: translateY(0);
         }
@@ -207,7 +254,7 @@
             background: rgba(247, 37, 133, 0.08);
         }
 
-        .category-info h3 {
+        .detail-info h3 {
             font-size: 16px;
             font-weight: 600;
             color: white;
@@ -215,7 +262,7 @@
             line-height: 1.4;
         }
 
-        .category-info p {
+        .detail-info p {
             font-size: 13px;
             color: var(--gray);
             line-height: 1.5;
@@ -234,7 +281,7 @@
             border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .category-id {
+        .detail-id {
             font-size: 11px;
             color: var(--gray);
             font-weight: 500;
@@ -244,7 +291,7 @@
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        .category-stats {
+        .detail-stats {
             font-size: 11px;
             color: var(--success);
             font-weight: 500;
@@ -450,18 +497,12 @@
         }
 
         /* Responsive */
-        @media (max-width: 1024px) {
-            .categories-grid {
-                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            }
-        }
-
         @media (max-width: 768px) {
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
 
-            .categories-grid {
+            .details-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -475,76 +516,78 @@
                 width: 100%;
                 justify-content: space-between;
             }
+
+            .kategori-header {
+                flex-direction: column;
+                text-align: center;
+            }
         }
 
         @media (max-width: 480px) {
             .stats-grid {
                 grid-template-columns: 1fr;
             }
-
-            .action-buttons {
-                flex-direction: column;
-                gap: 8px;
-            }
-
-            .btn {
-                width: 100%;
-                justify-content: center;
-            }
         }
     </style>
 @endsection
 
 @section('content')
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb">
+        <a href="{{ route('dashboard') }}">
+            <i class="fas fa-home"></i>
+            Dashboard
+        </a>
+        <span class="breadcrumb-separator">
+            <i class="fas fa-chevron-right"></i>
+        </span>
+        <span class="breadcrumb-current">{{ $kategori->name }}</span>
+    </nav>
+
+    <!-- Kategori Header -->
+    <div class="kategori-header">
+        <div class="kategori-header-icon">
+            <i class="{{ $kategori->icon ?? 'fas fa-folder' }}"></i>
+        </div>
+        <div class="kategori-header-info">
+            <h1>{{ $kategori->name }}</h1>
+            <p>{{ $kategori->desc }}</p>
+        </div>
+    </div>
+
     <!-- Stats -->
-    <div class="stats-grid" id="statsContainer">
+    <div class="stats-grid">
         <div class="stat-card">
             <div class="stat-header">
                 <div class="stat-icon">
-                    <i class="fas fa-folder"></i>
-                </div>
-                <div class="stat-trend">
-                    <i class="fas fa-arrow-up"></i>
-                    +0
+                    <i class="fas fa-list"></i>
                 </div>
             </div>
-            <div class="stat-value" id="totalKategori">0</div>
-            <div class="stat-label">Total Kategori</div>
+            <div class="stat-value" id="totalDetails">{{ $totalDetails }}</div>
+            <div class="stat-label">Total Detail</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-header">
+                <div class="stat-icon">
+                    <i class="fas fa-calendar"></i>
+                </div>
+            </div>
+            <div class="stat-value" id="totalTahun">{{ $totalTahun }}</div>
+            <div class="stat-label">Total Tahun</div>
         </div>
         <div class="stat-card">
             <div class="stat-header">
                 <div class="stat-icon">
                     <i class="fas fa-file-alt"></i>
                 </div>
-                <div class="stat-trend">
-                    <i class="fas fa-arrow-up"></i>
-                    +0
-                </div>
             </div>
-            <div class="stat-value" id="totalDokumen">0</div>
-            <div class="stat-label">Total Dokumen</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-header">
-                <div class="stat-icon">
-                    <i class="fas fa-users"></i>
-                </div>
-                <div class="stat-trend">
-                    <i class="fas fa-arrow-up"></i>
-                    +0
-                </div>
-            </div>
-            <div class="stat-value" id="totalUsers">1</div>
-            <div class="stat-label">Pengguna Aktif</div>
+            <div class="stat-value" id="totalBerkas">{{ $totalBerkas }}</div>
+            <div class="stat-label">Total Berkas</div>
         </div>
         <div class="stat-card">
             <div class="stat-header">
                 <div class="stat-icon">
                     <i class="fas fa-database"></i>
-                </div>
-                <div class="stat-trend">
-                    <i class="fas fa-arrow-up"></i>
-                    +0 MB
                 </div>
             </div>
             <div class="stat-value" id="totalSize">0 MB</div>
@@ -552,63 +595,63 @@
         </div>
     </div>
 
-    <!-- Categories Section -->
+    <!-- Details Section -->
     <div class="section-header">
-        <h2 class="section-title">Kategori Arsip</h2>
+        <h2 class="section-title">Detail Arsip</h2>
         <div class="action-buttons">
             <button class="btn btn-secondary" id="refreshBtn">
                 <i class="fas fa-sync-alt"></i>
                 Refresh
             </button>
-            <button class="btn btn-primary" id="addCategoryBtn">
+            <button class="btn btn-primary" id="addDetailBtn">
                 <i class="fas fa-plus"></i>
-                Tambah Kategori
+                Tambah Detail
             </button>
         </div>
     </div>
 
-    <div class="categories-grid" id="categoriesGrid">
-        <!-- Categories will be loaded via AJAX -->
+    <div class="details-grid" id="detailsGrid">
+        <!-- Details will be loaded via AJAX -->
     </div>
 
     <!-- FAB -->
-    <button class="fab" id="fabBtn" title="Tambah Kategori">
+    <button class="fab" id="fabBtn" title="Tambah Detail">
         <i class="fas fa-plus"></i>
     </button>
 
     <!-- Modal -->
-    <div class="modal-overlay" id="categoryModal">
+    <div class="modal-overlay" id="detailModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 id="modalTitle">Tambah Kategori Baru</h3>
+                <h3 id="modalTitle">Tambah Detail Baru</h3>
                 <button class="btn-close" id="closeModalBtn">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <form id="categoryForm">
+            <form id="detailForm">
                 @csrf
-                <input type="hidden" id="categoryId" name="id">
+                <input type="hidden" id="detailId" name="id">
                 <div class="form-group">
-                    <label class="form-label" for="categoryName">
-                        Nama Kategori
+                    <label class="form-label" for="detailName">
+                        Nama Detail
                     </label>
-                    <input type="text" class="form-input" id="categoryName" name="name" required
-                        placeholder="Masukkan nama kategori">
+                    <input type="text" class="form-input" id="detailName" name="name" required
+                        placeholder="Masukkan nama detail">
                     <div class="invalid-feedback" id="nameError"></div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label" for="categoryDesc">
+                    <label class="form-label" for="detailDesc">
                         Deskripsi
                     </label>
-                    <textarea class="form-input" id="categoryDesc" name="desc" rows="3"
-                        placeholder="Masukkan deskripsi kategori" required></textarea>
+                    <textarea class="form-input" id="detailDesc" name="desc" rows="3"
+                        placeholder="Masukkan deskripsi detail" required></textarea>
                     <div class="invalid-feedback" id="descError"></div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">
                         Icon
                     </label>
-                    <input type="hidden" id="categoryIcon" name="icon" value="fas fa-folder">
+                    <input type="hidden" id="detailIcon" name="icon" value="fas fa-folder">
                     <div class="icon-options" id="iconOptions">
                         <!-- Icons will be added here -->
                     </div>
@@ -630,6 +673,8 @@
 
 @section('scripts')
     <script>
+        const kategoriId = {{ $kategori->id }};
+
         // Icons
         const iconOptions = [
             'fas fa-folder', 'fas fa-folder-open', 'fas fa-file-alt', 'fas fa-file-pdf',
@@ -640,18 +685,18 @@
         ];
 
         // Global variables
-        let currentCategoryId = null;
+        let currentDetailId = null;
 
         // DOM Elements
         const elements = {
-            categoriesGrid: document.getElementById('categoriesGrid'),
-            addCategoryBtn: document.getElementById('addCategoryBtn'),
+            detailsGrid: document.getElementById('detailsGrid'),
+            addDetailBtn: document.getElementById('addDetailBtn'),
             refreshBtn: document.getElementById('refreshBtn'),
             fabBtn: document.getElementById('fabBtn'),
-            categoryModal: document.getElementById('categoryModal'),
+            detailModal: document.getElementById('detailModal'),
             closeModalBtn: document.getElementById('closeModalBtn'),
             cancelBtn: document.getElementById('cancelBtn'),
-            categoryForm: document.getElementById('categoryForm'),
+            detailForm: document.getElementById('detailForm'),
             modalTitle: document.getElementById('modalTitle'),
             iconOptionsContainer: document.getElementById('iconOptions')
         };
@@ -668,8 +713,8 @@
         }
 
         function resetForm() {
-            elements.categoryForm.reset();
-            document.getElementById('categoryId').value = '';
+            elements.detailForm.reset();
+            document.getElementById('detailId').value = '';
             clearFormErrors();
         }
 
@@ -686,116 +731,116 @@
                         opt.classList.remove('active');
                     });
                     option.classList.add('active');
-                    document.getElementById('categoryIcon').value = icon;
+                    document.getElementById('detailIcon').value = icon;
                 });
                 elements.iconOptionsContainer.appendChild(option);
             });
 
             if (elements.iconOptionsContainer.firstChild) {
                 elements.iconOptionsContainer.firstChild.classList.add('active');
-                document.getElementById('categoryIcon').value = iconOptions[0];
+                document.getElementById('detailIcon').value = iconOptions[0];
             }
         }
 
         // Load Stats
         async function loadStats() {
             try {
-                const response = await axios.get('/api/kategori/stats');
+                const response = await axios.get(`/api/kategori/${kategoriId}/detail/stats`);
                 if (response.data.success && response.data.data) {
                     const data = response.data.data;
-                    document.getElementById('totalKategori').textContent = data.total_kategori || 0;
-                    document.getElementById('totalDokumen').textContent = data.total_dokumen || 0;
-                    document.getElementById('totalUsers').textContent = data.total_users || 1;
+                    document.getElementById('totalDetails').textContent = data.total_details || 0;
+                    document.getElementById('totalTahun').textContent = data.total_tahun || 0;
+                    document.getElementById('totalBerkas').textContent = data.total_berkas || 0;
                     document.getElementById('totalSize').textContent = data.total_size || '0 MB';
                 }
             } catch (error) {
-                console.log('Stats API not available, using default values');
+                console.log('Stats API error:', error);
             }
         }
 
-        // Load Categories
-        async function loadCategories() {
+        // Load Details
+        async function loadDetails() {
             showLoading();
             try {
-                const response = await axios.get('/api/kategori');
+                const response = await axios.get(`/api/kategori/${kategoriId}/detail`);
                 if (response.data.success) {
-                    renderCategories(response.data.kategoris || response.data.data || []);
+                    renderDetails(response.data.data || []);
                 } else {
                     renderEmptyState();
                 }
             } catch (error) {
-                console.error('Error loading categories:', error);
-                showNotification('Gagal memuat kategori', 'error');
+                console.error('Error loading details:', error);
+                showNotification('Gagal memuat detail', 'error');
                 renderEmptyState();
             } finally {
                 hideLoading();
             }
         }
 
-        function renderCategories(categories) {
-            if (!categories || categories.length === 0) {
+        function renderDetails(details) {
+            if (!details || details.length === 0) {
                 renderEmptyState();
                 return;
             }
 
-            elements.categoriesGrid.innerHTML = '';
-            categories.forEach((category, index) => {
-                const card = createCategoryCard(category, index);
-                elements.categoriesGrid.appendChild(card);
+            elements.detailsGrid.innerHTML = '';
+            details.forEach((detail) => {
+                const card = createDetailCard(detail);
+                elements.detailsGrid.appendChild(card);
             });
         }
 
-        function createCategoryCard(category, index) {
+        function createDetailCard(detail) {
             const card = document.createElement('div');
-            card.className = 'category-card';
+            card.className = 'detail-card';
 
-            const totalDocs = category.total_documents ||
-                (category.documents_count ||
-                    (category.kategori_details ?
-                        category.kategori_details.reduce((sum, detail) => {
-                            return sum + (detail.tahun_kategori_details_count || 0);
-                        }, 0) : 0));
+            const totalBerkas = detail.berkas_count ||
+                (detail.tahun_kategori_details ?
+                    detail.tahun_kategori_details.reduce((sum, tahun) =>
+                        sum + (tahun.berkas_count || 0), 0
+                    ) : 0);
 
             card.innerHTML = `
-                <div class="card-header">
-                    <div class="category-icon">
-                        <i class="${category.icon || 'fas fa-folder'}"></i>
+                    <div class="card-header">
+                        <div class="detail-icon">
+                            <i class="${detail.icon || 'fas fa-folder'}"></i>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn-icon edit" data-id="${detail.id}" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-icon delete" data-id="${detail.id}" title="Hapus">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="card-actions">
-                        <button class="btn-icon edit" data-id="${category.id}" title="Edit">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn-icon delete" data-id="${category.id}" title="Hapus">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                    <div class="detail-info">
+                        <h3>${detail.name || 'Untitled Detail'}</h3>
+                        <p>${detail.desc || 'No description'}</p>
                     </div>
-                </div>
-                <div class="category-info">
-                    <h3>${category.name || 'Untitled Category'}</h3>
-                    <p>${category.desc || 'No description'}</p>
-                </div>
-                <div class="card-footer">
-                    <span class="category-id">ID: ${category.id || 'N/A'}</span>
-                    <span class="category-stats">
-                        <i class="fas fa-file"></i>
-                        ${totalDocs} dokumen
-                    </span>
-                </div>
-            `;
+                    <div class="card-footer">
+                        <span class="detail-id">ID: ${detail.id || 'N/A'}</span>
+                        <span class="detail-stats">
+                            <i class="fas fa-file"></i>
+                            ${totalBerkas} berkas
+                        </span>
+                    </div>
+                `;
 
             card.querySelector('.edit').addEventListener('click', (e) => {
                 e.stopPropagation();
-                openEditModal(category.id);
+                openEditModal(detail.id);
             });
 
             card.querySelector('.delete').addEventListener('click', (e) => {
                 e.stopPropagation();
-                deleteCategory(category.id);
+                deleteDetail(detail.id);
             });
 
             card.addEventListener('click', (e) => {
                 if (!e.target.closest('.card-actions')) {
-                    window.location.href = `/kategori/${category.id}`;
+                    // Navigate to tahun kategori detail page
+                    window.location.href = `/kategori/${kategoriId}/detail/${detail.id}/tahun`;
                 }
             });
 
@@ -803,78 +848,80 @@
         }
 
         function renderEmptyState() {
-            elements.categoriesGrid.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-folder-open"></i>
-                    <h3>Belum Ada Kategori</h3>
-                    <p>Mulai dengan menambahkan kategori pertama untuk mengelola arsip digital Anda.</p>
-                </div>
-            `;
+            elements.detailsGrid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-folder-open"></i>
+                        <h3>Belum Ada Detail</h3>
+                        <p>Mulai dengan menambahkan detail pertama untuk kategori ini.</p>
+                    </div>
+                `;
         }
 
         // Modal Functions
         function openAddModal() {
-            elements.modalTitle.textContent = 'Tambah Kategori Baru';
+            elements.modalTitle.textContent = 'Tambah Detail Baru';
             resetForm();
-            currentCategoryId = null;
+            currentDetailId = null;
 
             document.querySelectorAll('.icon-option').forEach((opt, index) => {
                 opt.classList.remove('active');
                 if (index === 0) {
                     opt.classList.add('active');
-                    document.getElementById('categoryIcon').value = iconOptions[0];
+                    document.getElementById('detailIcon').value = iconOptions[0];
                 }
             });
 
-            elements.categoryModal.style.display = 'flex';
+            elements.detailModal.style.display = 'flex';
         }
 
-        async function openEditModal(categoryId) {
+        async function openEditModal(detailId) {
             showLoading();
             try {
-                const response = await axios.get(`/api/kategori/${categoryId}/edit`);
+                const response = await axios.get(`/api/kategori/${kategoriId}/detail/${detailId}/edit`);
                 if (response.data.success) {
-                    const category = response.data.data || response.data.kategori;
-                    elements.modalTitle.textContent = 'Edit Kategori';
-                    document.getElementById('categoryId').value = category.id;
-                    document.getElementById('categoryName').value = category.name;
-                    document.getElementById('categoryDesc').value = category.desc;
-                    currentCategoryId = category.id;
+                    const detail = response.data.data;
+                    elements.modalTitle.textContent = 'Edit Detail';
+                    document.getElementById('detailId').value = detail.id;
+                    document.getElementById('detailName').value = detail.name;
+                    document.getElementById('detailDesc').value = detail.desc;
+                    currentDetailId = detail.id;
 
                     document.querySelectorAll('.icon-option').forEach(opt => {
                         const iconClass = opt.querySelector('i').className;
                         opt.classList.remove('active');
-                        if (iconClass === category.icon) {
+                        if (iconClass === detail.icon) {
                             opt.classList.add('active');
-                            document.getElementById('categoryIcon').value = category.icon;
+                            document.getElementById('detailIcon').value = detail.icon;
                         }
                     });
 
-                    elements.categoryModal.style.display = 'flex';
+                    elements.detailModal.style.display = 'flex';
                 }
             } catch (error) {
-                console.error('Error loading category:', error);
-                showNotification('Gagal memuat data kategori', 'error');
+                console.error('Error loading detail:', error);
+                showNotification('Gagal memuat data detail', 'error');
             } finally {
                 hideLoading();
             }
         }
 
         function closeModal() {
-            elements.categoryModal.style.display = 'none';
+            elements.detailModal.style.display = 'none';
             resetForm();
-            currentCategoryId = null;
+            currentDetailId = null;
         }
 
         // Form Submission
         async function handleSubmit(e) {
             e.preventDefault();
 
-            const formData = new FormData(elements.categoryForm);
+            const formData = new FormData(elements.detailForm);
             const data = Object.fromEntries(formData);
 
-            const url = currentCategoryId ? `/api/kategori/${currentCategoryId}` : '/api/kategori';
-            const method = currentCategoryId ? 'put' : 'post';
+            const url = currentDetailId
+                ? `/api/kategori/${kategoriId}/detail/${currentDetailId}`
+                : `/api/kategori/${kategoriId}/detail`;
+            const method = currentDetailId ? 'put' : 'post';
 
             showLoading();
 
@@ -892,7 +939,7 @@
                 if (response.data.success) {
                     showNotification(response.data.message, 'success');
                     loadStats();
-                    loadCategories();
+                    loadDetails();
                     closeModal();
                 }
             } catch (error) {
@@ -914,15 +961,15 @@
             }
         }
 
-        // Delete Category
-        async function deleteCategory(categoryId) {
-            if (!confirm('Apakah Anda yakin ingin menghapus kategori ini?')) {
+        // Delete Detail
+        async function deleteDetail(detailId) {
+            if (!confirm('Apakah Anda yakin ingin menghapus detail ini?')) {
                 return;
             }
 
             showLoading();
             try {
-                const response = await axios.delete(`/api/kategori/${categoryId}`, {
+                const response = await axios.delete(`/api/kategori/${kategoriId}/detail/${detailId}`, {
                     headers: {
                         'X-CSRF-TOKEN': csrfToken
                     }
@@ -931,11 +978,11 @@
                 if (response.data.success) {
                     showNotification(response.data.message, 'success');
                     loadStats();
-                    loadCategories();
+                    loadDetails();
                 }
             } catch (error) {
-                console.error('Error deleting category:', error);
-                showNotification(error.response?.data?.message || 'Gagal menghapus kategori', 'error');
+                console.error('Error deleting detail:', error);
+                showNotification(error.response?.data?.message || 'Gagal menghapus detail', 'error');
             } finally {
                 hideLoading();
             }
@@ -945,27 +992,27 @@
         function init() {
             initIconOptions();
             loadStats();
-            loadCategories();
+            loadDetails();
 
             // Event Listeners
-            elements.addCategoryBtn.addEventListener('click', openAddModal);
+            elements.addDetailBtn.addEventListener('click', openAddModal);
             elements.fabBtn.addEventListener('click', openAddModal);
             elements.refreshBtn.addEventListener('click', () => {
                 showNotification('Memperbarui data...', 'success');
                 loadStats();
-                loadCategories();
+                loadDetails();
             });
 
             elements.closeModalBtn.addEventListener('click', closeModal);
             elements.cancelBtn.addEventListener('click', closeModal);
 
-            elements.categoryModal.addEventListener('click', (e) => {
-                if (e.target === elements.categoryModal) {
+            elements.detailModal.addEventListener('click', (e) => {
+                if (e.target === elements.detailModal) {
                     closeModal();
                 }
             });
 
-            elements.categoryForm.addEventListener('submit', handleSubmit);
+            elements.detailForm.addEventListener('submit', handleSubmit);
 
             // Keyboard shortcuts
             document.addEventListener('keydown', (e) => {
