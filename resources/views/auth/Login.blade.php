@@ -16,19 +16,19 @@
         rel="stylesheet">
     <style>
         :root {
-            --primary-color: #296374;
-            --primary-gradient: linear-gradient(135deg, #296374 0%, #3a7a8c 100%);
-            --secondary-color: #00b4d8;
-            --accent-color: #90e0ef;
-            --dark-color: #1a3a4a;
-            --light-color: #f8f9fa;
-            --glass-bg: rgba(255, 255, 255, 0.95);
-            --glass-border: rgba(255, 255, 255, 0.2);
-            --shadow-light: rgba(41, 99, 116, 0.1);
-            --shadow-medium: rgba(41, 99, 116, 0.2);
-            --shadow-dark: rgba(26, 58, 74, 0.3);
-            --success-color: #2a9d8f;
-            --danger-color: #e63946;
+            --primary-color: #B7A3E3;
+            --primary-gradient: linear-gradient(135deg, #B7A3E3 0%, #9D8BCF 100%);
+            --secondary-color: #C8B6E2;
+            --accent-color: #D4C5EC;
+            --dark-color: #5D4B8C;
+            --light-color: #F5F2FF;
+            --glass-bg: rgba(255, 255, 255, 0.98);
+            --glass-border: rgba(183, 163, 227, 0.2);
+            --shadow-light: rgba(183, 163, 227, 0.15);
+            --shadow-medium: rgba(183, 163, 227, 0.25);
+            --shadow-dark: rgba(93, 75, 140, 0.3);
+            --success-color: #8BCA9D;
+            --danger-color: #E3A3A3;
         }
 
         * {
@@ -40,7 +40,7 @@
 
         body {
             min-height: 100vh;
-            background: linear-gradient(135deg, #0a1929 0%, #1a3a4a 50%, #296374 100%);
+            background: linear-gradient(135deg, #4A376A 0%, #6D5B9E 50%, #9D8BCF 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -65,7 +65,7 @@
             background: var(--accent-color);
             border-radius: 50%;
             animation: float 15s infinite linear;
-            opacity: 0.1;
+            opacity: 0.15;
         }
 
         .bg-particle:nth-child(1) {
@@ -74,6 +74,7 @@
             top: 10%;
             left: 5%;
             animation-delay: 0s;
+            background: #D4C5EC;
         }
 
         .bg-particle:nth-child(2) {
@@ -83,6 +84,7 @@
             right: 10%;
             animation-delay: 2s;
             animation-duration: 20s;
+            background: #C8B6E2;
         }
 
         .bg-particle:nth-child(3) {
@@ -92,6 +94,7 @@
             left: 20%;
             animation-delay: 4s;
             animation-duration: 25s;
+            background: #B7A3E3;
         }
 
         .bg-particle:nth-child(4) {
@@ -100,6 +103,7 @@
             top: 30%;
             right: 20%;
             animation-delay: 6s;
+            background: #9D8BCF;
         }
 
         /* Main Container */
@@ -111,8 +115,8 @@
             border-radius: 20px;
             overflow: hidden;
             box-shadow:
-                0 15px 40px rgba(0, 0, 0, 0.25),
-                0 0 0 1px rgba(255, 255, 255, 0.1);
+                0 15px 40px rgba(93, 75, 140, 0.25),
+                0 0 0 1px rgba(183, 163, 227, 0.15);
             position: relative;
             z-index: 1;
             animation: containerAppear 1s ease-out;
@@ -155,6 +159,8 @@
             animation: pulse 3s infinite;
             position: relative;
             overflow: hidden;
+            background: linear-gradient(135deg, #F5F2FF 0%, #E8E2FF 100%);
+            border: 3px solid rgba(183, 163, 227, 0.3);
         }
 
         .logo-img {
@@ -227,11 +233,11 @@
             width: 100%;
             height: 46px;
             padding: 0 15px 0 45px;
-            border: 2px solid #e0e6ed;
+            border: 2px solid #E8E2FF;
             border-radius: 10px;
             font-size: 14px;
             transition: all 0.3s;
-            background: white;
+            background: #F9F7FF;
             color: var(--dark-color);
             font-weight: 500;
         }
@@ -239,12 +245,12 @@
         .form-input:focus {
             outline: none;
             border-color: var(--secondary-color);
-            box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.1);
+            box-shadow: 0 0 0 3px rgba(183, 163, 227, 0.2);
             transform: translateY(-1px);
         }
 
         .form-input:focus+.input-icon {
-            color: var(--secondary-color);
+            color: var(--dark-color);
             transform: translateY(-50%) scale(1.05);
         }
 
@@ -263,7 +269,7 @@
 
         .password-toggle:hover {
             opacity: 1;
-            color: var(--secondary-color);
+            color: var(--primary-color);
         }
 
         /* Remember Me & Forgot Password */
@@ -284,7 +290,7 @@
         .custom-checkbox {
             width: 18px;
             height: 18px;
-            border: 2px solid #d1d9e6;
+            border: 2px solid #D1C7EC;
             border-radius: 5px;
             display: flex;
             align-items: center;
@@ -311,7 +317,7 @@
         }
 
         .forgot-password {
-            color: var(--secondary-color);
+            color: var(--dark-color);
             text-decoration: none;
             font-size: 0.85rem;
             font-weight: 500;
@@ -320,6 +326,7 @@
         }
 
         .forgot-password:hover {
+            color: var(--primary-color);
             text-decoration: underline;
         }
 
@@ -345,7 +352,7 @@
 
         .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(41, 99, 116, 0.3);
+            box-shadow: 0 8px 20px rgba(183, 163, 227, 0.4);
         }
 
         .btn-login:active {
@@ -397,7 +404,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(255,255,255,0.05)"/></svg>');
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(255,255,255,0.08)"/></svg>');
             animation: panelFloat 20s infinite linear;
         }
 
@@ -412,8 +419,8 @@
             font-size: 60px;
             margin-bottom: 20px;
             animation: float 6s ease-in-out infinite;
-            color: var(--accent-color);
-            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.2));
+            color: rgba(255, 255, 255, 0.9);
+            filter: drop-shadow(0 4px 10px rgba(93, 75, 140, 0.3));
         }
 
         /* Info Panel Text */
@@ -423,12 +430,13 @@
             font-size: 1.6rem;
             margin-bottom: 15px;
             line-height: 1.3;
+            text-shadow: 0 2px 5px rgba(93, 75, 140, 0.3);
         }
 
         .info-content p {
             font-size: 0.9rem;
             line-height: 1.6;
-            opacity: 0.9;
+            opacity: 0.95;
             margin-bottom: 20px;
         }
 
@@ -443,16 +451,16 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.15);
             padding: 10px 12px;
             border-radius: 8px;
             backdrop-filter: blur(5px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .feature-icon {
             font-size: 12px;
-            color: var(--accent-color);
+            color: rgba(255, 255, 255, 0.9);
         }
 
         .feature-text {
@@ -479,15 +487,15 @@
         }
 
         .alert-success {
-            background: rgba(46, 204, 113, 0.1);
-            border-color: #2ecc71;
-            color: #27ae60;
+            background: rgba(139, 202, 157, 0.15);
+            border-color: #8BCA9D;
+            color: #5D8C6B;
         }
 
         .alert-error {
-            background: rgba(231, 76, 60, 0.1);
+            background: rgba(227, 163, 163, 0.15);
             border-color: var(--danger-color);
-            color: #c0392b;
+            color: #9D6B6B;
         }
 
         /* Animations */
@@ -586,6 +594,7 @@
                 order: -1;
                 padding: 30px 25px;
                 min-height: 220px;
+                background: linear-gradient(135deg, #9D8BCF 0%, #B7A3E3 100%);
             }
 
             .login-panel {
@@ -822,7 +831,7 @@
 
         /* Backend error message */
         .backend-error {
-            color: #dc3545;
+            color: #E3A3A3;
             font-size: 13px;
             margin-top: 5px;
             display: none;
@@ -1023,18 +1032,18 @@
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
                 if (email && !emailRegex.test(email)) {
-                    this.style.borderColor = '#e74c3c';
+                    this.style.borderColor = '#E3A3A3';
                 } else {
-                    this.style.borderColor = '#e0e6ed';
+                    this.style.borderColor = '#E8E2FF';
                 }
             });
 
             // Validasi real-time untuk password
             document.getElementById('password').addEventListener('input', function () {
                 if (this.value.length > 0 && this.value.length < 3) {
-                    this.style.borderColor = '#e74c3c';
+                    this.style.borderColor = '#E3A3A3';
                 } else {
-                    this.style.borderColor = '#e0e6ed';
+                    this.style.borderColor = '#E8E2FF';
                 }
             });
 
@@ -1058,12 +1067,12 @@
             // Add hover effects to input fields
             document.querySelectorAll('.form-input').forEach(input => {
                 input.addEventListener('mouseenter', function () {
-                    this.style.borderColor = '#cbd5e1';
+                    this.style.borderColor = '#D1C7EC';
                 });
 
                 input.addEventListener('mouseleave', function () {
                     if (!this.matches(':focus')) {
-                        this.style.borderColor = '#e0e6ed';
+                        this.style.borderColor = '#E8E2FF';
                     }
                 });
             });

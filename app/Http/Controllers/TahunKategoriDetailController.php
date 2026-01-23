@@ -19,19 +19,35 @@ class TahunKategoriDetailController extends Controller
     public function index($kategoriId, $detailId)
     {
         $kategori = Kategori::findOrFail($kategoriId);
+
+        // Load dengan count untuk efisiensi
         $kategoriDetail = KategoriDetail::where('id_kategori', $kategoriId)
-            ->with(['tahunKategoriDetails.berkas'])
+            ->with([
+                'tahunKategoriDetails' => function ($query) {
+                    $query->withCount(['berkas as berkas_count'])
+                        ->with(['berkas' => function ($q) {
+                            $q->select(['id', 'id_tahun_kategori_detail', 'name', 'size', 'date', 'file_path']);
+                        }]);
+                }
+            ])
             ->findOrFail($detailId);
 
+        // Hitung total menggunakan data yang sudah di-load
         $totalTahun = $kategoriDetail->tahunKategoriDetails->count();
-        $totalBerkas = $kategoriDetail->tahunKategoriDetails->sum(function ($tahun) {
-            return $tahun->berkas->count();
-        });
+        $totalBerkas = $kategoriDetail->tahunKategoriDetails->sum('berkas_count');
+
+        // Hitung total size dengan cara yang lebih efisien
         $totalSize = $kategoriDetail->tahunKategoriDetails->sum(function ($tahun) {
             return $tahun->berkas->sum('size');
         });
 
+        // Format total size untuk display
+        $totalSizeFormatted = $this->formatSize($totalSize);
+
         $userRole = Auth::user()->role->name ?? 'user';
+
+        // Tambahkan atribut total_size_formatted ke kategoriDetail
+        $kategoriDetail->total_size_formatted = $totalSizeFormatted;
 
         return view('admin.tahun-kategori-detail', compact(
             'kategori',
@@ -39,6 +55,7 @@ class TahunKategoriDetailController extends Controller
             'totalTahun',
             'totalBerkas',
             'totalSize',
+            'totalSizeFormatted',
             'userRole'
         ));
     }

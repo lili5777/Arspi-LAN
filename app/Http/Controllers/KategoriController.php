@@ -41,11 +41,28 @@ class KategoriController extends Controller
      */
     public function index()
     {
-        $kategoris = Kategori::withCount(['kategoriDetails as kategori_details_count'])
-            ->with(['kategoriDetails' => function ($query) {
-                $query->withCount(['tahunKategoriDetails as tahun_kategori_details_count']);
-            }])
-            ->get();
+        // Load kategori dengan menghitung total dokumen melalui relasi
+        $kategoris = Kategori::with([
+            'kategoriDetails.tahunKategoriDetails.berkas' // Load relasi berkas
+        ])
+            ->withCount([
+                'kategoriDetails as kategori_details_count',
+            ])
+            ->get()
+            ->map(function ($kategori) {
+                // Hitung total dokumen untuk setiap kategori
+                $totalDocuments = 0;
+                foreach ($kategori->kategoriDetails as $detail) {
+                    foreach ($detail->tahunKategoriDetails as $tahunDetail) {
+                        $totalDocuments += $tahunDetail->berkas->count();
+                    }
+                }
+
+                // Tambahkan properti total_documents ke objek kategori
+                $kategori->total_documents = $totalDocuments;
+
+                return $kategori;
+            });
 
         return response()->json([
             'success' => true,

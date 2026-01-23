@@ -16,16 +16,17 @@
 
         .stat-card {
             background: var(--dark-light);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(183, 163, 227, 0.1);
             border-radius: var(--radius-lg);
             padding: 22px;
             transition: all 0.2s ease;
             position: relative;
             overflow: hidden;
+            backdrop-filter: blur(10px);
         }
 
         .stat-card:hover {
-            border-color: rgba(67, 97, 238, 0.2);
+            border-color: rgba(183, 163, 227, 0.3);
             transform: translateY(-2px);
             box-shadow: var(--shadow-lg);
         }
@@ -41,7 +42,7 @@
             width: 40px;
             height: 40px;
             border-radius: var(--radius-md);
-            background: linear-gradient(135deg, rgba(67, 97, 238, 0.1) 0%, rgba(67, 97, 238, 0.2) 100%);
+            background: linear-gradient(135deg, rgba(183, 163, 227, 0.15) 0%, rgba(183, 163, 227, 0.25) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -54,7 +55,7 @@
             font-weight: 500;
             padding: 4px 8px;
             border-radius: var(--radius-full);
-            background: rgba(76, 201, 240, 0.1);
+            background: rgba(139, 202, 157, 0.15);
             color: var(--success);
             display: flex;
             align-items: center;
@@ -62,7 +63,7 @@
         }
 
         .stat-trend.negative {
-            background: rgba(247, 37, 133, 0.1);
+            background: rgba(227, 163, 163, 0.15);
             color: var(--danger);
         }
 
@@ -124,17 +125,18 @@
 
         .category-card {
             background: var(--dark-light);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(183, 163, 227, 0.1);
             border-radius: var(--radius-lg);
             padding: 22px;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
             cursor: pointer;
+            backdrop-filter: blur(10px);
         }
 
         .category-card:hover {
-            border-color: rgba(67, 97, 238, 0.3);
+            border-color: rgba(183, 163, 227, 0.4);
             transform: translateY(-4px);
             box-shadow: var(--shadow-xl);
         }
@@ -150,7 +152,7 @@
             width: 48px;
             height: 48px;
             border-radius: var(--radius-md);
-            background: linear-gradient(135deg, rgba(67, 97, 238, 0.1) 0%, rgba(67, 97, 238, 0.2) 100%);
+            background: linear-gradient(135deg, rgba(183, 163, 227, 0.15) 0%, rgba(183, 163, 227, 0.25) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -184,27 +186,27 @@
             align-items: center;
             justify-content: center;
             background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(183, 163, 227, 0.1);
             color: var(--gray);
             cursor: pointer;
             transition: all 0.2s ease;
         }
 
         .btn-icon:hover {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(183, 163, 227, 0.08);
             transform: scale(1.1);
         }
 
         .btn-icon.edit:hover {
             color: var(--success);
-            border-color: rgba(76, 201, 240, 0.2);
-            background: rgba(76, 201, 240, 0.08);
+            border-color: rgba(139, 202, 157, 0.2);
+            background: rgba(139, 202, 157, 0.08);
         }
 
         .btn-icon.delete:hover {
             color: var(--danger);
-            border-color: rgba(247, 37, 133, 0.2);
-            background: rgba(247, 37, 133, 0.08);
+            border-color: rgba(227, 163, 163, 0.2);
+            background: rgba(227, 163, 163, 0.08);
         }
 
         .category-info h3 {
@@ -231,7 +233,7 @@
             justify-content: space-between;
             align-items: center;
             padding-top: 16px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: 1px solid rgba(183, 163, 227, 0.1);
         }
 
         .category-id {
@@ -241,7 +243,7 @@
             padding: 4px 8px;
             background: rgba(255, 255, 255, 0.03);
             border-radius: var(--radius-full);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(183, 163, 227, 0.1);
         }
 
         .category-stats {
@@ -258,8 +260,8 @@
             grid-column: 1 / -1;
             text-align: center;
             padding: 50px 30px;
-            background: rgba(255, 255, 255, 0.02);
-            border: 2px dashed rgba(255, 255, 255, 0.08);
+            background: rgba(183, 163, 227, 0.02);
+            border: 2px dashed rgba(183, 163, 227, 0.15);
             border-radius: var(--radius-lg);
         }
 
@@ -292,7 +294,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(15, 23, 42, 0.9);
+            background: rgba(42, 27, 74, 0.9);
             backdrop-filter: blur(4px);
             display: none;
             align-items: center;
@@ -307,8 +309,9 @@
             padding: 28px;
             max-width: 450px;
             width: 100%;
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(183, 163, 227, 0.15);
             box-shadow: var(--shadow-xl);
+            backdrop-filter: blur(10px);
         }
 
         .modal-header {
@@ -328,8 +331,8 @@
             width: 32px;
             height: 32px;
             border-radius: var(--radius-md);
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(183, 163, 227, 0.08);
+            border: 1px solid rgba(183, 163, 227, 0.15);
             color: var(--gray);
             display: flex;
             align-items: center;
@@ -339,7 +342,7 @@
         }
 
         .btn-close:hover {
-            background: rgba(255, 255, 255, 0.06);
+            background: rgba(183, 163, 227, 0.12);
             color: white;
         }
 
@@ -358,8 +361,8 @@
         .form-input {
             width: 100%;
             padding: 10px 14px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(183, 163, 227, 0.05);
+            border: 1px solid rgba(183, 163, 227, 0.15);
             border-radius: var(--radius-md);
             color: white;
             font-size: 14px;
@@ -368,8 +371,8 @@
 
         .form-input:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.1);
-            background: rgba(255, 255, 255, 0.04);
+            box-shadow: 0 0 0 2px rgba(183, 163, 227, 0.2);
+            background: rgba(183, 163, 227, 0.08);
             outline: none;
         }
 
@@ -389,8 +392,8 @@
             width: 40px;
             height: 40px;
             border-radius: var(--radius-md);
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(183, 163, 227, 0.08);
+            border: 1px solid rgba(183, 163, 227, 0.15);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -413,7 +416,7 @@
             gap: 10px;
             margin-top: 24px;
             padding-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            border-top: 1px solid rgba(183, 163, 227, 0.15);
         }
 
         .invalid-feedback {
@@ -439,14 +442,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
+            box-shadow: 0 6px 20px rgba(183, 163, 227, 0.4);
             transition: all 0.2s ease;
             z-index: 100;
         }
 
         .fab:hover {
             transform: translateY(-3px) rotate(90deg);
-            box-shadow: 0 10px 25px rgba(67, 97, 238, 0.5);
+            box-shadow: 0 10px 25px rgba(183, 163, 227, 0.5);
         }
 
         /* Responsive */
@@ -630,9 +633,6 @@
 
 @section('scripts')
     <script>
-
-
-
         // Icons
         const iconOptions = [
             'fas fa-folder', 'fas fa-folder-open', 'fas fa-file-alt', 'fas fa-file-pdf',
@@ -755,16 +755,16 @@
             card.className = 'category-card';
 
             const editButton = canEdit ? `
-            <button class="btn-icon edit" data-id="${category.id}" title="Edit">
-                <i class="fas fa-edit"></i>
-            </button>
-            ` :``;
+                <button class="btn-icon edit" data-id="${category.id}" title="Edit">
+                    <i class="fas fa-edit"></i>
+                </button>
+                ` : ``;
 
             const deleteButton = canEdit ? `
-            <button class="btn-icon delete" data-id="${category.id}" title="Hapus">
-                <i class="fas fa-trash"></i>
-            </button>
-            `:``;
+                <button class="btn-icon delete" data-id="${category.id}" title="Hapus">
+                    <i class="fas fa-trash"></i>
+                </button>
+                `: ``;
 
             const totalDocs = category.total_documents ||
                 (category.documents_count ||
@@ -774,27 +774,27 @@
                         }, 0) : 0));
 
             card.innerHTML = `
-                <div class="card-header">
-                    <div class="category-icon">
-                        <i class="${category.icon || 'fas fa-folder'}"></i>
+                    <div class="card-header">
+                        <div class="category-icon">
+                            <i class="${category.icon || 'fas fa-folder'}"></i>
+                        </div>
+                        <div class="card-actions">
+                            ${editButton}
+                            ${deleteButton}
+                        </div>
                     </div>
-                    <div class="card-actions">
-                        ${editButton}
-                        ${deleteButton}
+                    <div class="category-info">
+                        <h3>${category.name || 'Untitled Category'}</h3>
+                        <p>${category.desc || 'No description'}</p>
                     </div>
-                </div>
-                <div class="category-info">
-                    <h3>${category.name || 'Untitled Category'}</h3>
-                    <p>${category.desc || 'No description'}</p>
-                </div>
-                <div class="card-footer">
-                    <span class="category-id">ID: ${category.id || 'N/A'}</span>
-                    <span class="category-stats">
-                        <i class="fas fa-file"></i>
-                        ${totalDocs} dokumen
-                    </span>
-                </div>
-            `;
+                    <div class="card-footer">
+                        <span class="category-id">ID: ${category.id || 'N/A'}</span>
+                        <span class="category-stats">
+                            <i class="fas fa-file"></i>
+                            ${totalDocs} dokumen
+                        </span>
+                    </div>
+                `;
 
             const editBtn = card.querySelector('.edit');
             if (editBtn) {
@@ -823,12 +823,12 @@
 
         function renderEmptyState() {
             elements.categoriesGrid.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-folder-open"></i>
-                    <h3>Belum Ada Kategori</h3>
-                    <p>Mulai dengan menambahkan kategori pertama untuk mengelola arsip digital Anda.</p>
-                </div>
-            `;
+                    <div class="empty-state">
+                        <i class="fas fa-folder-open"></i>
+                        <h3>Belum Ada Kategori</h3>
+                        <p>Mulai dengan menambahkan kategori pertama untuk mengelola arsip digital Anda.</p>
+                    </div>
+                `;
         }
 
         // Modal Functions

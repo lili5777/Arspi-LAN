@@ -41,10 +41,22 @@ class KategoriDetailController extends Controller
     public function getDetails($kategoriId)
     {
         $kategoriDetails = KategoriDetail::where('id_kategori', $kategoriId)
-            ->withCount(['tahunKategoriDetails as tahun_count'])
-            ->with(['tahunKategoriDetails' => function ($query) {
-                $query->withCount('berkas');
-            }])
+            ->with([
+                'tahunKategoriDetails' => function ($query) {
+                    $query->withCount('berkas');
+                }
+            ])
+            ->withCount([
+                // total seluruh berkas dari semua tahun
+                'tahunKategoriDetails as berkas_count' => function ($query) {
+                    $query->join(
+                        'berkas',
+                        'berkas.id_tahun_kategori_detail',
+                        '=',
+                        'tahun_kategori_details.id'
+                    );
+                }
+            ])
             ->get();
 
         return response()->json([
