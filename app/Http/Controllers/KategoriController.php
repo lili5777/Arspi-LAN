@@ -3,11 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Kategori;
-use App\Models\KategoriDetail;
-use App\Models\TahunKategoriDetail;
 use App\Models\Berkas;
+use App\Models\ArsipInput;
+use App\Models\ArsipKartografis;
 use App\Models\User;
-// use Illuminate\Container\Attributes\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -15,9 +14,6 @@ use Illuminate\Support\Facades\Validator;
 
 class KategoriController extends Controller
 {
-    /**
-     * Display dashboard view
-     */
     public function dashboard()
     {
         $kategoris = Kategori::withCount(['kategoriDetails as kategori_details_count'])
@@ -31,38 +27,49 @@ class KategoriController extends Controller
         $totalSizeGB = $totalSize > 0 ? number_format($totalSize / (1024 * 1024 * 1024), 2) : 0;
         $totalUsers = 8;
         $userRole = Auth::user()->role->name ?? 'user';
-        
 
-        return view('admin.dashboard', compact('kategoris', 'totalBerkas', 'totalSize', 'totalSizeGB', 'totalUsers','userRole'));
+        return view('admin.dashboard', compact(
+            'kategoris', 'totalBerkas', 'totalSize', 'totalSizeGB', 'totalUsers', 'userRole'
+        ));
     }
 
-    /**
-     * Get all categories (API endpoint)
-     */
     public function index()
     {
-        // Load kategori dengan menghitung total dokumen melalui relasi
         $kategoris = Kategori::with([
-            'kategoriDetails.tahunKategoriDetails.berkas' // Load relasi berkas
+            'kategoriDetails.tahunKategoriDetails.berkas',
+            'kategoriDetails.tahunKategoriDetails.arsipInputs',
+            'arsipKartografis',
         ])
-            ->withCount([
-                'kategoriDetails as kategori_details_count',
-            ])
-            ->get()
-            ->map(function ($kategori) {
-                // Hitung total dokumen untuk setiap kategori
-                $totalDocuments = 0;
+        ->withCount(['kategoriDetails as kategori_details_count'])
+        ->get()
+        ->map(function ($kategori) {
+            if ($kategori->isDirect()) {
+                // Kartografi: hitung langsung dari arsip_kartografis
+                $kategori->total_documents = $kategori->arsipKartografis->count();
+            } elseif ($kategori->isUpload()) {
+                // Upload: hitung dari berkas
+                $total = 0;
                 foreach ($kategori->kategoriDetails as $detail) {
-                    foreach ($detail->tahunKategoriDetails as $tahunDetail) {
-                        $totalDocuments += $tahunDetail->berkas->count();
+                    foreach ($detail->tahunKategoriDetails as $tahun) {
+                        $total += $tahun->berkas->count();
                     }
                 }
+                $kategori->total_documents = $total;
+            } elseif ($kategori->isInput()) {
+                // Input: hitung dari arsip_inputs
+                $total = 0;
+                foreach ($kategori->kategoriDetails as $detail) {
+                    foreach ($detail->tahunKategoriDetails as $tahun) {
+                        $total += $tahun->arsipInputs->count();
+                    }
+                }
+                $kategori->total_documents = $total;
+            } else {
+                $kategori->total_documents = 0;
+            }
 
-                // Tambahkan properti total_documents ke objek kategori
-                $kategori->total_documents = $totalDocuments;
-
-                return $kategori;
-            });
+            return $kategori;
+        });
 
         return response()->json([
             'success' => true,
@@ -70,45 +77,41 @@ class KategoriController extends Controller
         ]);
     }
 
-    /**
-     * Get dashboard statistics
-     */
     public function getStats()
     {
         $totalKategori = Kategori::count();
-        $totalDokumen = Berkas::count();
-        $totalSize = Berkas::sum('size');
-        $totalUsers = User::count();
-
-        $stats = [
-            'total_kategori' => $totalKategori,
-            'total_dokumen' => $totalDokumen,
-            'total_size' => $this->formatSize($totalSize),
-            'total_users' => $totalUsers,
-        ];
+        $totalBerkas   = Berkas::count();
+        $totalInput    = ArsipInput::count();
+        $totalKarto    = ArsipKartografis::count();
+        $totalDokumen  = $totalBerkas + $totalInput + $totalKarto;
+        $totalSize     = Berkas::sum('size');
+        $totalUsers    = User::count();
 
         return response()->json([
             'success' => true,
-            'data' => $stats
+            'data' => [
+                'total_kategori' => $totalKategori,
+                'total_dokumen'  => $totalDokumen,
+                'total_size'     => $this->formatSize($totalSize),
+                'total_users'    => $totalUsers,
+            ]
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255|unique:kategoris,name',
             'desc' => 'required|string',
             'icon' => 'required|string|max:255',
+            'type' => 'required|in:upload,input,direct',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validasi gagal',
-                'errors' => $validator->errors()
+                'errors'  => $validator->errors()
             ], 422);
         }
 
@@ -119,6 +122,7 @@ class KategoriController extends Controller
                 'name' => $request->name,
                 'desc' => $request->desc,
                 'icon' => $request->icon,
+                'type' => $request->type,
             ]);
 
             DB::commit();
@@ -126,32 +130,30 @@ class KategoriController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Kategori berhasil ditambahkan',
-                'data' => $kategori
+                'data'    => $kategori
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal menambahkan kategori',
-                'error' => $e->getMessage()
+                'error'   => $e->getMessage()
             ], 500);
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show($id)
     {
         $kategori = Kategori::findOrFail($id);
 
-        // Redirect ke halaman kategori detail
+        // Arahkan ke halaman yang sesuai berdasarkan type
+        if ($kategori->isDirect()) {
+            return redirect()->route('kategori.kartografi.index', $kategori->id);
+        }
+
         return redirect()->route('kategori.detail.index', $kategori->id);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit($id)
     {
         $kategori = Kategori::find($id);
@@ -165,13 +167,10 @@ class KategoriController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $kategori
+            'data'    => $kategori
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, $id)
     {
         $kategori = Kategori::find($id);
@@ -187,13 +186,14 @@ class KategoriController extends Controller
             'name' => 'required|string|max:255|unique:kategoris,name,' . $kategori->id,
             'desc' => 'required|string',
             'icon' => 'required|string|max:255',
+            'type' => 'required|in:upload,input,direct',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validasi gagal',
-                'errors' => $validator->errors()
+                'errors'  => $validator->errors()
             ], 422);
         }
 
@@ -204,6 +204,7 @@ class KategoriController extends Controller
                 'name' => $request->name,
                 'desc' => $request->desc,
                 'icon' => $request->icon,
+                'type' => $request->type,
             ]);
 
             DB::commit();
@@ -211,21 +212,18 @@ class KategoriController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Kategori berhasil diperbarui',
-                'data' => $kategori
+                'data'    => $kategori
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal memperbarui kategori',
-                'error' => $e->getMessage()
+                'error'   => $e->getMessage()
             ], 500);
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($id)
     {
         $kategori = Kategori::find($id);
@@ -239,9 +237,7 @@ class KategoriController extends Controller
 
         try {
             DB::beginTransaction();
-
             $kategori->delete();
-
             DB::commit();
 
             return response()->json([
@@ -253,24 +249,16 @@ class KategoriController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal menghapus kategori',
-                'error' => $e->getMessage()
+                'error'   => $e->getMessage()
             ], 500);
         }
     }
 
-    /**
-     * Format size in bytes to readable format
-     */
     private function formatSize($bytes)
     {
-        if ($bytes >= 1073741824) {
-            return number_format($bytes / 1073741824, 2) . ' GB';
-        } elseif ($bytes >= 1048576) {
-            return number_format($bytes / 1048576, 2) . ' MB';
-        } elseif ($bytes >= 1024) {
-            return number_format($bytes / 1024, 2) . ' KB';
-        } else {
-            return $bytes . ' bytes';
-        }
+        if ($bytes >= 1073741824) return number_format($bytes / 1073741824, 2) . ' GB';
+        if ($bytes >= 1048576)    return number_format($bytes / 1048576, 2) . ' MB';
+        if ($bytes >= 1024)       return number_format($bytes / 1024, 2) . ' KB';
+        return $bytes . ' bytes';
     }
 }

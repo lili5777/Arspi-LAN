@@ -9,6 +9,8 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TahunKategoriDetailController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\KartografiController;
+use App\Http\Controllers\ArsipInputController;
 
 
 // Route Authentication
@@ -74,6 +76,35 @@ Route::middleware('auth')->group(function () {
         Route::post('/{berkas}', [BerkasController::class, 'update'])->name('update'); // Using POST for file upload
         Route::delete('/{berkas}', [BerkasController::class, 'destroy'])->name('destroy');
         Route::get('/{berkas}/download', [BerkasController::class, 'download'])->name('download');
+    });
+
+    // Route Arsip Kartografi (type: direct)
+    Route::get('/kategori/{kategori}/kartografi', [KartografiController::class, 'index'])
+        ->name('kategori.kartografi.index');
+
+    // API Routes Kartografi
+    Route::prefix('api/kategori/{kategori}/kartografi')->name('api.kategori.kartografi.')->group(function () {
+        Route::get('/', [KartografiController::class, 'getKartografi'])->name('index');
+        Route::get('/stats', [KartografiController::class, 'getStats'])->name('stats');
+        Route::post('/', [KartografiController::class, 'store'])->name('store');
+        Route::get('/{kartografi}/edit', [KartografiController::class, 'edit'])->name('edit');
+        Route::post('/{kartografi}', [KartografiController::class, 'update'])->name('update');
+        Route::delete('/{kartografi}', [KartografiController::class, 'destroy'])->name('destroy');
+        Route::get('/{kartografi}/download', [KartografiController::class, 'download'])->name('download');
+    });
+
+    // Route Arsip Input (type: input — Usul Musnah, Vital, Permanen)
+    Route::get('/kategori/{kategori}/detail/{detail}/tahun/{tahun}/input', [ArsipInputController::class, 'index'])
+        ->name('kategori.detail.tahun.input.index');
+
+    // API Routes Arsip Input
+    Route::prefix('api/kategori/{kategori}/detail/{detail}/tahun/{tahun}/input')->name('api.kategori.detail.tahun.input.')->group(function () {
+        Route::get('/', [ArsipInputController::class, 'getInputs'])->name('index');
+        Route::get('/stats', [ArsipInputController::class, 'getStats'])->name('stats');
+        Route::post('/', [ArsipInputController::class, 'store'])->name('store');
+        Route::get('/{input}/edit', [ArsipInputController::class, 'edit'])->name('edit');
+        Route::put('/{input}', [ArsipInputController::class, 'update'])->name('update');
+        Route::delete('/{input}', [ArsipInputController::class, 'destroy'])->name('destroy');
     });
 
     // Route Role

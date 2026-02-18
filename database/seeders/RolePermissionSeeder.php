@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Kategori;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
@@ -68,5 +69,57 @@ class RolePermissionSeeder extends Seeder
             'password' => bcrypt('222'),
             'role_id' => $userRole->id
         ]);
+
+        $kategoris = [
+            [
+                'name' => 'Berita Acara Usul Pindah',
+                'desc' => 'Dokumen berita acara untuk arsip yang diusulkan pindah lokasi penyimpanan',
+                'icon' => 'fas fa-file-alt',
+                'type' => 'upload',
+            ],
+            [
+                'name' => 'Daftar Arsip Inaktif',
+                'desc' => 'Daftar arsip yang sudah tidak aktif digunakan namun masih disimpan',
+                'icon' => 'fas fa-archive',
+                'type' => 'upload',
+            ],
+            [
+                'name' => 'Daftar Arsip Usul Pindah',
+                'desc' => 'Daftar arsip yang diusulkan untuk dipindahkan ke unit kearsipan',
+                'icon' => 'fas fa-dolly',
+                'type' => 'upload',
+            ],
+            [
+                'name' => 'Daftar Arsip Usul Musnah',
+                'desc' => 'Daftar arsip yang diusulkan untuk dimusnahkan sesuai jadwal retensi',
+                'icon' => 'fas fa-trash-alt',
+                'type' => 'input',
+            ],
+            [
+                'name' => 'Daftar Arsip Vital',
+                'desc' => 'Daftar arsip vital yang wajib dilindungi dan dijaga keberadaannya',
+                'icon' => 'fas fa-shield-alt',
+                'type' => 'input',
+            ],
+            [
+                'name' => 'Daftar Arsip Permanen',
+                'desc' => 'Daftar arsip yang disimpan secara permanen karena memiliki nilai guna tinggi',
+                'icon' => 'fas fa-infinity',
+                'type' => 'input',
+            ],
+            [
+                'name' => 'Arsip Kartografi',
+                'desc' => 'Dokumen arsip dalam bentuk peta, gambar teknik, dan dokumen kartografi lainnya',
+                'icon' => 'fas fa-map',
+                'type' => 'direct',
+            ],
+        ];
+
+        foreach ($kategoris as $item) {
+            Kategori::firstOrCreate(
+                ['name' => $item['name']],
+                $item
+            );
+        }
     }
 }

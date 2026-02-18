@@ -17,6 +17,7 @@ class Kategori extends Model
         'name',
         'desc',
         'icon',
+        'type', // tambah
     ];
 
     protected $casts = [
@@ -24,12 +25,18 @@ class Kategori extends Model
         'updated_at' => 'datetime',
     ];
 
-    /**
-     * Get all kategori details for this kategori
-     */
-    
     public function kategoriDetails(): HasMany
     {
         return $this->hasMany(KategoriDetail::class, 'id_kategori');
     }
+
+    public function arsipKartografis(): HasMany
+    {
+        return $this->hasMany(ArsipKartografis::class, 'id_kategori');
+    }
+
+    // Helper type
+    public function isUpload(): bool { return $this->type === 'upload'; }
+    public function isInput(): bool  { return $this->type === 'input'; }
+    public function isDirect(): bool { return $this->type === 'direct'; }
 }

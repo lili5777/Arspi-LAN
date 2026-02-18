@@ -617,6 +617,15 @@
                     </div>
                     <div class="invalid-feedback" id="iconError"></div>
                 </div>
+                <div class="form-group">
+                    <label class="form-label">Tipe Kategori</label>
+                    <select class="form-input" id="categoryType" name="type" required>
+                        <option value="upload">Upload Dokumen (Folder → Tahun → Upload)</option>
+                        <option value="input">Form Input (Folder → Tahun → Input Tabel)</option>
+                        <option value="direct">Langsung Upload (tanpa Folder & Tahun)</option>
+                    </select>
+                    <div class="invalid-feedback" id="typeError"></div>
+                </div>
                 <div class="form-footer">
                     <button type="button" class="btn btn-secondary" id="cancelBtn">
                         Batal
@@ -661,7 +670,7 @@
 
         // Utility Functions
         function clearFormErrors() {
-            ['nameError', 'descError', 'iconError'].forEach(id => {
+            ['nameError', 'descError', 'iconError', 'typeError'].forEach(id => {  // tambah 'typeError'
                 const element = document.getElementById(id);
                 if (element) {
                     element.style.display = 'none';
@@ -836,6 +845,7 @@
             elements.modalTitle.textContent = 'Tambah Kategori Baru';
             resetForm();
             currentCategoryId = null;
+            document.getElementById('categoryType').value = 'upload'; // tambah
 
             document.querySelectorAll('.icon-option').forEach((opt, index) => {
                 opt.classList.remove('active');
@@ -858,6 +868,7 @@
                     document.getElementById('categoryId').value = category.id;
                     document.getElementById('categoryName').value = category.name;
                     document.getElementById('categoryDesc').value = category.desc;
+                    document.getElementById('categoryType').value = category.type || 'upload'; // tambah
                     currentCategoryId = category.id;
 
                     document.querySelectorAll('.icon-option').forEach(opt => {

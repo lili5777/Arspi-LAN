@@ -63,8 +63,31 @@ class TahunKategoriDetailController extends Controller
     /**
      * Get all tahun kategori details for specific kategori detail (API endpoint)
      */
+    public function show($kategoriId, $detailId, $tahunId)
+    {
+        $kategori = Kategori::findOrFail($kategoriId);
+
+        // Redirect ke halaman yang sesuai berdasarkan type
+        if ($kategori->isInput()) {
+            return redirect()->route('kategori.detail.tahun.input.index', [
+                'kategori' => $kategoriId,
+                'detail'   => $detailId,
+                'tahun'    => $tahunId,
+            ]);
+        }
+
+        // Default: upload → ke halaman berkas
+        return redirect()->route('kategori.detail.tahun.berkas.index', [
+            'kategori' => $kategoriId,
+            'detail'   => $detailId,
+            'tahun'    => $tahunId,
+        ]);
+    }
+
     public function getTahunDetails($kategoriId, $detailId)
     {
+        $kategori = Kategori::findOrFail($kategoriId);
+
         $tahunDetails = TahunKategoriDetail::where('id_kategori_detail', $detailId)
             ->withCount('berkas')
             ->with(['berkas' => function ($query) {
@@ -74,15 +97,22 @@ class TahunKategoriDetailController extends Controller
             ->orderBy('name', 'desc')
             ->get();
 
-        // Add total size for each tahun
-        $tahunDetails->each(function ($tahun) {
-            $tahun->total_size = $tahun->berkas->sum('size');
-            $tahun->total_size_formatted = $this->formatSize($tahun->total_size);
+        $tahunDetails->each(function ($tahun) use ($kategori) {
+            if ($kategori->isUpload()) {
+                $tahun->total_size = $tahun->berkas->sum('size');
+                $tahun->total_size_formatted = $this->formatSize($tahun->total_size);
+            } else {
+                // type input: hitung arsip_inputs
+                $tahun->total_size = 0;
+                $tahun->total_size_formatted = '-';
+                $tahun->berkas_count = $tahun->arsipInputs()->count();
+                $tahun->berkas = collect([]); // kosongkan preview berkas
+            }
         });
 
         return response()->json([
             'success' => true,
-            'data' => $tahunDetails
+            'data'    => $tahunDetails
         ]);
     }
 
@@ -166,17 +196,17 @@ class TahunKategoriDetailController extends Controller
     /**
      * Display the specified tahun kategori detail
      */
-    public function show($kategoriId, $detailId, $tahunId)
-    {
-        $tahunDetail = TahunKategoriDetail::with(['kategoriDetail.kategori', 'berkas'])
-            ->where('id_kategori_detail', $detailId)
-            ->findOrFail($tahunId);
+    // public function show($kategoriId, $detailId, $tahunId)
+    // {
+    //     $tahunDetail = TahunKategoriDetail::with(['kategoriDetail.kategori', 'berkas'])
+    //         ->where('id_kategori_detail', $detailId)
+    //         ->findOrFail($tahunId);
 
-        return response()->json([
-            'success' => true,
-            'data' => $tahunDetail
-        ]);
-    }
+    //     return response()->json([
+    //         'success' => true,
+    //         'data' => $tahunDetail
+    //     ]);
+    // }
 
     /**
      * Get tahun kategori detail for editing

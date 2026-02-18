@@ -758,6 +758,7 @@
     <script>
         const kategoriId = {{ $kategori->id }};
         const detailId = {{ $kategoriDetail->id }};
+        const kategoriType = '{{ $kategori->type }}'
 
         // Global variables
         let currentTahunId = null;
@@ -979,8 +980,12 @@
 
             card.addEventListener('click', (e) => {
                 if (!e.target.closest('.tahun-actions')) {
-                    // Navigate to berkas page
-                    window.location.href = `/kategori/${kategoriId}/detail/${detailId}/tahun/${tahun.id}/berkas`;
+                    const kategoriType = '{{ $kategori->type }}'; // tambah ini di atas script
+                    if (kategoriType === 'input') {
+                        window.location.href = `/kategori/${kategoriId}/detail/${detailId}/tahun/${tahun.id}/input`;
+                    } else {
+                        window.location.href = `/kategori/${kategoriId}/detail/${detailId}/tahun/${tahun.id}/berkas`;
+                    }
                 }
             });
 

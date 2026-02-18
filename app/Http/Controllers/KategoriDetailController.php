@@ -65,9 +65,6 @@ class KategoriDetailController extends Controller
         ]);
     }
 
-    /**
-     * Get statistics for kategori detail
-     */
     public function getStats($kategoriId)
     {
         $kategori = Kategori::findOrFail($kategoriId);
@@ -78,24 +75,46 @@ class KategoriDetailController extends Controller
             $query->where('id_kategori', $kategoriId);
         })->count();
 
-        $totalBerkas = Berkas::whereHas('tahunKategoriDetail.kategoriDetail', function ($query) use ($kategoriId) {
-            $query->where('id_kategori', $kategoriId);
-        })->count();
+        // Hitung total dokumen sesuai type kategori
+        if ($kategori->isUpload()) {
+            $totalDokumen = Berkas::whereHas('tahunKategoriDetail.kategoriDetail', function ($query) use ($kategoriId) {
+                $query->where('id_kategori', $kategoriId);
+            })->count();
 
-        $totalSize = Berkas::whereHas('tahunKategoriDetail.kategoriDetail', function ($query) use ($kategoriId) {
-            $query->where('id_kategori', $kategoriId);
-        })->sum('size');
+            $totalSize = Berkas::whereHas('tahunKategoriDetail.kategoriDetail', function ($query) use ($kategoriId) {
+                $query->where('id_kategori', $kategoriId);
+            })->sum('size');
 
-        $stats = [
-            'total_details' => $totalDetails,
-            'total_tahun' => $totalTahun,
-            'total_berkas' => $totalBerkas,
-            'total_size' => $this->formatSize($totalSize),
-        ];
+        } elseif ($kategori->isInput()) {
+            $totalDokumen = \App\Models\ArsipInput::whereHas('tahunKategoriDetail.kategoriDetail', function ($query) use ($kategoriId) {
+                $query->where('id_kategori', $kategoriId);
+            })->count();
+            $totalSize = 0;
+
+        } else {
+            $totalDokumen = 0;
+            $totalSize = 0;
+        }
 
         return response()->json([
             'success' => true,
-            'data' => $stats
+            'data' => [
+                'total_details' => $totalDetails,
+                'total_tahun'   => $totalTahun,
+                'total_berkas'  => $totalDokumen,
+                'total_size'    => $this->formatSize($totalSize),
+            ]
+        ]);
+    }
+
+    public function show($kategoriId, $detailId)
+    {
+        $kategori = Kategori::findOrFail($kategoriId);
+        $kategoriDetail = KategoriDetail::where('id_kategori', $kategoriId)->findOrFail($detailId);
+
+        return redirect()->route('kategori.detail.tahun.index', [
+            'kategori' => $kategoriId,
+            'detail'   => $detailId,
         ]);
     }
 
@@ -148,16 +167,16 @@ class KategoriDetailController extends Controller
     /**
      * Display the specified kategori detail
      */
-    public function show($kategoriId, $detailId)
-    {
-        $kategoriDetail = KategoriDetail::where('id_kategori', $kategoriId)->findOrFail($detailId);
+    // public function show($kategoriId, $detailId)
+    // {
+    //     $kategoriDetail = KategoriDetail::where('id_kategori', $kategoriId)->findOrFail($detailId);
 
-        // Redirect ke halaman tahun kategori detail
-        return redirect()->route('kategori.detail.tahun.index', [
-            'kategori' => $kategoriId,
-            'detail' => $detailId
-        ]);
-    }
+    //     // Redirect ke halaman tahun kategori detail
+    //     return redirect()->route('kategori.detail.tahun.index', [
+    //         'kategori' => $kategoriId,
+    //         'detail' => $detailId
+    //     ]);
+    // }
 
     /**
      * Get kategori detail for editing

@@ -24,19 +24,18 @@ class TahunKategoriDetail extends Model
         'updated_at' => 'datetime',
     ];
 
-    /**
-     * Get the kategori detail that owns this tahun kategori detail
-     */
     public function kategoriDetail(): BelongsTo
     {
         return $this->belongsTo(KategoriDetail::class, 'id_kategori_detail');
     }
 
-    /**
-     * Get all berkas for this tahun kategori detail
-     */
     public function berkas(): HasMany
     {
         return $this->hasMany(Berkas::class, 'id_tahun_kategori_detail');
+    }
+
+    public function arsipInputs(): HasMany // tambah
+    {
+        return $this->hasMany(ArsipInput::class, 'id_tahun_kategori_detail');
     }
 }
