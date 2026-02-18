@@ -75,7 +75,7 @@
         border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 60px;
     }
     .table-scroll { overflow-x: auto; }
-    .table { width: 100%; border-collapse: collapse; min-width: 900px; }
+    .table { width: 100%; border-collapse: collapse; min-width: 1400px; }
     .table thead { background: rgba(255,255,255,0.02); border-bottom: 1px solid rgba(255,255,255,0.05); }
     .table th {
         padding: 13px 14px; text-align: left; font-size: 11px; font-weight: 600;
@@ -89,13 +89,17 @@
     .table tbody tr:last-child td { border-bottom: none; }
 
     .td-no { width: 50px; text-align: center; color: var(--gray); }
-    .td-kode { width: 110px; }
-    .td-uraian { min-width: 200px; }
+    .td-kode { width: 120px; }
+    .td-uraian { min-width: 250px; }
     .uraian-text { line-height: 1.5; }
-    .td-waktu, .td-jumlah, .td-kondisi { width: 90px; }
-    .td-extra { width: 120px; }
-    .td-ket { width: 140px; color: var(--gray); font-size: 12px; }
-    .td-aksi { width: 80px; }
+    .td-waktu { width: 120px; }
+    .td-jumlah { width: 80px; }
+    .td-jenis { width: 100px; }
+    .td-tingkat { width: 120px; }
+    .td-tanggal { width: 110px; }
+    .td-extra { min-width: 120px; }
+    .td-ket { min-width: 150px; color: var(--gray); font-size: 12px; }
+    .td-aksi { width: 90px; }
 
     .badge {
         display: inline-block; padding: 3px 8px; border-radius: var(--radius-full);
@@ -129,7 +133,7 @@
     }
     .modal-content {
         background: var(--dark-light); border-radius: var(--radius-xl); padding: 28px;
-        max-width: 680px; width: 100%; border: 1px solid rgba(183,163,227,0.15);
+        max-width: 900px; width: 100%; border: 1px solid rgba(183,163,227,0.15);
         box-shadow: var(--shadow-xl); max-height: 90vh; overflow-y: auto;
     }
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
@@ -249,26 +253,49 @@
     <div class="table-scroll">
         <table class="table">
             <thead>
+                @if($kategori->name === 'Daftar Arsip Usul Musnah')
                 <tr>
                     <th class="td-no">No</th>
                     <th class="td-kode">Kode Klasifikasi</th>
                     <th class="td-uraian">Uraian Informasi</th>
                     <th class="td-waktu">Kurun Waktu</th>
+                    <th class="td-tingkat">Tingkat Perkembangan</th>
                     <th class="td-jumlah">Jumlah</th>
-                    <th class="td-kondisi">Kondisi</th>
-                    {{-- Kolom dinamis sesuai type --}}
-                    @if($kategori->name === 'Daftar Arsip Usul Musnah')
-                        <th class="td-extra">Jangka Simpan</th>
-                        <th class="td-extra">Nasib Akhir</th>
-                    @else
-                        <th class="td-extra">Lokasi Simpan</th>
-                        <th class="td-extra">No. Boks</th>
-                    @endif
-                    <th class="td-ket">Keterangan</th>
+                    <th class="td-extra">No. Box</th>
+                    <th class="td-extra">Media Simpan</th>
+                    <th class="td-extra">Kondisi Fisik</th>
+                    <th class="td-extra">Nomor Folder</th>
+                    <th class="td-extra">Jangka Simpan</th>
+                    <th class="td-extra">Nasib Akhir Arsip</th>
+                    <th class="td-extra">Lbr</th>
+                    <th class="td-ket">Ket</th>
                     @if($userRole === 'admin')
                     <th class="td-aksi">Aksi</th>
                     @endif
                 </tr>
+                @else
+                <tr>
+                    <th class="td-no">No.</th>
+                    <th class="td-jenis">Jenis Arsip</th>
+                    <th class="td-extra">No Box</th>
+                    <th class="td-extra">No Berkas</th>
+                    <th class="td-extra">No. Perjanjian Kerjasama</th>
+                    <th class="td-extra">Pihak I</th>
+                    <th class="td-extra">Pihak II</th>
+                    <th class="td-tingkat">Tingkat Perkembangan</th>
+                    <th class="td-tanggal">Tanggal Berlaku</th>
+                    <th class="td-tanggal">Tanggal Berakhir</th>
+                    <th class="td-extra">Media</th>
+                    <th class="td-jumlah">Jumlah</th>
+                    <th class="td-extra">Jangka Simpan</th>
+                    <th class="td-extra">Lokasi Simpan</th>
+                    <th class="td-extra">Metode Perlindungan</th>
+                    <th class="td-ket">Ket</th>
+                    @if($userRole === 'admin')
+                    <th class="td-aksi">Aksi</th>
+                    @endif
+                </tr>
+                @endif
             </thead>
             <tbody id="tableBody"></tbody>
         </table>
@@ -289,17 +316,18 @@
         <form id="mainForm">
             @csrf
             <input type="hidden" id="itemId">
+            
+            @if($kategori->name === 'Daftar Arsip Usul Musnah')
             <div class="form-grid">
-
-                {{-- Baris 1: No Urut & Kode Klasifikasi --}}
+                {{-- Baris 1: No & Kode Klasifikasi --}}
                 <div class="form-group">
-                    <label class="form-label">No. Urut <span>*</span></label>
-                    <input type="number" class="form-input" id="fNoUrut" name="no_urut" min="1" required>
-                    <div class="invalid-feedback" id="no_urutError"></div>
+                    <label class="form-label">No <span>*</span></label>
+                    <input type="number" class="form-input" id="fNo" name="no" min="1" required>
+                    <div class="invalid-feedback" id="noError"></div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Kode Klasifikasi <span>*</span></label>
-                    <input type="text" class="form-input" id="fKode" name="kode_klasifikasi" required placeholder="Contoh: 600.1">
+                    <label class="form-label">Kode Klasifikasi</label>
+                    <input type="text" class="form-input" id="fKodeKlasifikasi" name="kode_klasifikasi" placeholder="Contoh: 600.1">
                     <div class="invalid-feedback" id="kode_klasifikasiError"></div>
                 </div>
 
@@ -310,19 +338,12 @@
                     <div class="invalid-feedback" id="uraian_informasiError"></div>
                 </div>
 
-                {{-- Kurun Waktu & Jumlah --}}
+                {{-- Kurun Waktu & Tingkat Perkembangan --}}
                 <div class="form-group">
-                    <label class="form-label">Kurun Waktu <span>*</span></label>
-                    <input type="text" class="form-input" id="fKurun" name="kurun_waktu" required placeholder="Contoh: 2020 - 2024">
+                    <label class="form-label">Kurun Waktu</label>
+                    <input type="text" class="form-input" id="fKurun" name="kurun_waktu" placeholder="Contoh: 2020 - 2024">
                     <div class="invalid-feedback" id="kurun_waktuError"></div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Jumlah <span>*</span></label>
-                    <input type="text" class="form-input" id="fJumlah" name="jumlah" required placeholder="Contoh: 5 Berkas">
-                    <div class="invalid-feedback" id="jumlahError"></div>
-                </div>
-
-                {{-- Tingkat Perkembangan & Media Simpan --}}
                 <div class="form-group">
                     <label class="form-label">Tingkat Perkembangan</label>
                     <select class="form-input" id="fTingkat" name="tingkat_perkembangan">
@@ -333,20 +354,31 @@
                         <option value="Tembusan">Tembusan</option>
                     </select>
                 </div>
+
+                {{-- Jumlah & No. Box --}}
+                <div class="form-group">
+                    <label class="form-label">Jumlah <span>*</span></label>
+                    <input type="text" class="form-input" id="fJumlah" name="jumlah" required placeholder="Contoh: 5 Berkas">
+                    <div class="invalid-feedback" id="jumlahError"></div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">No. Box</label>
+                    <input type="text" class="form-input" id="fNoBox" name="no_box" placeholder="Contoh: B-001">
+                </div>
+
+                {{-- Media Simpan & Kondisi Fisik --}}
                 <div class="form-group">
                     <label class="form-label">Media Simpan</label>
-                    <select class="form-input" id="fMedia" name="media_simpan">
+                    <select class="form-input" id="fMediaSimpan" name="media_simpan">
                         <option value="">-- Pilih --</option>
                         <option value="Kertas">Kertas</option>
                         <option value="Digital">Digital</option>
                         <option value="Mikrofilm">Mikrofilm</option>
                     </select>
                 </div>
-
-                {{-- Kondisi --}}
                 <div class="form-group">
-                    <label class="form-label">Kondisi</label>
-                    <select class="form-input" id="fKondisi" name="kondisi">
+                    <label class="form-label">Kondisi Fisik</label>
+                    <select class="form-input" id="fKondisi" name="kondisi_fisik">
                         <option value="">-- Pilih --</option>
                         <option value="Baik">Baik</option>
                         <option value="Rusak Ringan">Rusak Ringan</option>
@@ -354,49 +386,139 @@
                     </select>
                 </div>
 
-                {{-- Kolom khusus per type --}}
-                @if($kategori->name === 'Daftar Arsip Usul Musnah')
-                <hr class="section-divider">
-                <p class="section-label"><i class="fas fa-trash-alt"></i> Informasi Pemusnahan</p>
+                {{-- Nomor Folder & Jangka Simpan --}}
                 <div class="form-group">
-                    <label class="form-label">Jangka Simpan <span>*</span></label>
-                    <input type="text" class="form-input" id="fJangka" name="jangka_simpan" placeholder="Contoh: 5 Tahun">
-                    <div class="invalid-feedback" id="jangka_simpanError"></div>
+                    <label class="form-label">Nomor Folder</label>
+                    <input type="text" class="form-input" id="fNomorFolder" name="nomor_folder" placeholder="Contoh: F-001">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Nasib Akhir <span>*</span></label>
-                    <select class="form-input" id="fNasib" name="nasib_akhir">
+                    <label class="form-label">Jangka Simpan <span>*</span></label>
+                    <input type="text" class="form-input" id="fJangka" name="jangka_simpan" required placeholder="Contoh: 5 Tahun">
+                    <div class="invalid-feedback" id="jangka_simpanError"></div>
+                </div>
+
+                {{-- Nasib Akhir Arsip & Lbr --}}
+                <div class="form-group">
+                    <label class="form-label">Nasib Akhir Arsip <span>*</span></label>
+                    <select class="form-input" id="fNasib" name="nasib_akhir_arsip" required>
                         <option value="">-- Pilih --</option>
                         <option value="Musnah">Musnah</option>
                         <option value="Permanen">Permanen</option>
                         <option value="Dinilai Kembali">Dinilai Kembali</option>
                     </select>
-                    <div class="invalid-feedback" id="nasib_akhirError"></div>
+                    <div class="invalid-feedback" id="nasib_akhir_arsipError"></div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Tanggal Habis Retensi</label>
-                    <input type="date" class="form-input" id="fRetensi" name="tanggal_habis_retensi">
+                    <label class="form-label">Lbr</label>
+                    <input type="number" class="form-input" id="fLembar" name="lembar" placeholder="Jumlah lembar">
                 </div>
-                @else
-                <hr class="section-divider">
-                <p class="section-label"><i class="fas fa-map-marker-alt"></i> Lokasi Penyimpanan</p>
+
+                {{-- Keterangan --}}
+                <div class="form-group span-2">
+                    <label class="form-label">Ket</label>
+                    <textarea class="form-input" id="fKet" name="keterangan" placeholder="Catatan tambahan..."></textarea>
+                </div>
+            </div>
+
+            @else {{-- Vital & Permanen --}}
+            <div class="form-grid">
+                {{-- No. & Jenis Arsip --}}
+                <div class="form-group">
+                    <label class="form-label">No. <span>*</span></label>
+                    <input type="number" class="form-input" id="fNo" name="no" min="1" required>
+                    <div class="invalid-feedback" id="noError"></div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Jenis Arsip <span>*</span></label>
+                    <select class="form-input" id="fJenisArsip" name="jenis_arsip" required>
+                        <option value="">-- Pilih --</option>
+                        <option value="Vital">Vital</option>
+                        <option value="Permanen">Permanen</option>
+                    </select>
+                    <div class="invalid-feedback" id="jenis_arsipError"></div>
+                </div>
+
+                {{-- No Box & No Berkas --}}
+                <div class="form-group">
+                    <label class="form-label">No Box</label>
+                    <input type="text" class="form-input" id="fNoBox" name="no_box" placeholder="Contoh: B-001">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">No Berkas</label>
+                    <input type="text" class="form-input" id="fNoBerkas" name="no_berkas" placeholder="Contoh: BRK-001">
+                </div>
+
+                {{-- No. Perjanjian Kerjasama & Pihak I --}}
+                <div class="form-group">
+                    <label class="form-label">No. Perjanjian Kerjasama</label>
+                    <input type="text" class="form-input" id="fNoPerjanjian" name="no_perjanjian_kerjasama" placeholder="Contoh: PKS-001">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Pihak I</label>
+                    <input type="text" class="form-input" id="fPihakI" name="pihak_i" placeholder="Nama pihak pertama">
+                </div>
+
+                {{-- Pihak II & Tingkat Perkembangan --}}
+                <div class="form-group">
+                    <label class="form-label">Pihak II</label>
+                    <input type="text" class="form-input" id="fPihakII" name="pihak_ii" placeholder="Nama pihak kedua">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tingkat Perkembangan</label>
+                    <select class="form-input" id="fTingkat" name="tingkat_perkembangan">
+                        <option value="">-- Pilih --</option>
+                        <option value="Asli">Asli</option>
+                        <option value="Fotokopi">Fotokopi</option>
+                        <option value="Salinan">Salinan</option>
+                        <option value="Tembusan">Tembusan</option>
+                    </select>
+                </div>
+
+                {{-- Tanggal Berlaku & Tanggal Berakhir --}}
+                <div class="form-group">
+                    <label class="form-label">Tanggal Berlaku</label>
+                    <input type="date" class="form-input" id="fTanggalBerlaku" name="tanggal_berlaku">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tanggal Berakhir</label>
+                    <input type="date" class="form-input" id="fTanggalBerakhir" name="tanggal_berakhir">
+                </div>
+
+                {{-- Media & Jumlah --}}
+                <div class="form-group">
+                    <label class="form-label">Media</label>
+                    <input type="text" class="form-input" id="fMedia" name="media" placeholder="Jenis media">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Jumlah <span>*</span></label>
+                    <input type="text" class="form-input" id="fJumlah" name="jumlah" required placeholder="Contoh: 5 Berkas">
+                    <div class="invalid-feedback" id="jumlahError"></div>
+                </div>
+
+                {{-- Jangka Simpan & Lokasi Simpan --}}
+                <div class="form-group">
+                    <label class="form-label">Jangka Simpan</label>
+                    <input type="text" class="form-input" id="fJangka" name="jangka_simpan" placeholder="Contoh: 10 Tahun">
+                </div>
                 <div class="form-group">
                     <label class="form-label">Lokasi Simpan</label>
                     <input type="text" class="form-input" id="fLokasi" name="lokasi_simpan" placeholder="Contoh: Ruang Arsip Lantai 2">
                 </div>
+
+                {{-- Metode Perlindungan --}}
                 <div class="form-group">
-                    <label class="form-label">Nomor Boks</label>
-                    <input type="text" class="form-input" id="fBoks" name="nomor_boks" placeholder="Contoh: B-001">
+                    <label class="form-label">Metode Perlindungan</label>
+                    <input type="text" class="form-input" id="fMetode" name="metode_perlindungan" placeholder="Contoh: Brankas, Digital">
                 </div>
-                @endif
 
                 {{-- Keterangan --}}
                 <div class="form-group span-2">
-                    <label class="form-label">Keterangan</label>
+                    <label class="form-label">Ket</label>
                     <textarea class="form-input" id="fKet" name="keterangan" placeholder="Catatan tambahan..."></textarea>
                 </div>
-
             </div>
+            @endif
+
             <div class="form-footer">
                 <button type="button" class="btn btn-secondary" id="cancelBtn">Batal</button>
                 <button type="submit" class="btn btn-primary">
@@ -410,37 +532,48 @@
 
 @section('scripts')
 <script>
-    const kategoriId  = {{ $kategori->id }};
-    const detailId    = {{ $kategoriDetail->id }};
-    const tahunId     = {{ $tahunDetail->id }};
+    const kategoriId   = {{ $kategori->id }};
+    const detailId     = {{ $kategoriDetail->id }};
+    const tahunId      = {{ $tahunDetail->id }};
     const kategoriNama = '{{ $kategori->name }}';
-    const userRole    = '{{ $userRole }}';
-    const canEdit     = userRole === 'admin';
-    const isMusnah    = kategoriNama === 'Daftar Arsip Usul Musnah';
+    const userRole     = '{{ $userRole }}';
+    const canEdit      = userRole === 'admin';
+    const isMusnah     = kategoriNama === 'Daftar Arsip Usul Musnah';
 
     let allData   = [];
     let currentId = null;
 
-    const el = {
+    const elForm = {
         tableBody:   document.getElementById('tableBody'),
         searchInput: document.getElementById('searchInput'),
         mainModal:   document.getElementById('mainModal'),
         mainForm:    document.getElementById('mainForm'),
     };
 
+    // =====================
+    // UTILITY
+    // =====================
     function clearErrors() {
-        ['no_urutError','kode_klasifikasiError','uraian_informasiError','kurun_waktuError',
-         'jumlahError','jangka_simpanError','nasib_akhirError'].forEach(id => {
+        [
+            'noError', 'kode_klasifikasiError', 'uraian_informasiError',
+            'kurun_waktuError', 'jumlahError', 'jangka_simpanError',
+            'nasib_akhir_arsipError', 'jenis_arsipError'
+        ].forEach(id => {
             const e = document.getElementById(id);
             if (e) { e.style.display = 'none'; e.textContent = ''; }
         });
     }
 
     function resetForm() {
-        el.mainForm.reset();
+        elForm.mainForm.reset();
         document.getElementById('itemId').value = '';
         currentId = null;
         clearErrors();
+    }
+
+    function setField(id, val) {
+        const e = document.getElementById(id);
+        if (e) e.value = val || '';
     }
 
     function getKondisiBadge(kondisi) {
@@ -450,18 +583,22 @@
         return `<span class="badge badge-default">${kondisi}</span>`;
     }
 
-    // Load stats
+    // =====================
+    // LOAD STATS
+    // =====================
     async function loadStats() {
         try {
             const res = await axios.get(`/api/kategori/${kategoriId}/detail/${detailId}/tahun/${tahunId}/input/stats`);
             if (res.data.success) {
-                document.getElementById('totalInput').textContent  = res.data.data.total_input || 0;
+                document.getElementById('totalInput').textContent   = res.data.data.total_input || 0;
                 document.getElementById('latestUpdate').textContent = res.data.data.latest_update || '-';
             }
-        } catch(e) { console.log('stats error', e); }
+        } catch (e) { console.log('stats error', e); }
     }
 
-    // Load data
+    // =====================
+    // LOAD DATA
+    // =====================
     async function loadData() {
         showLoading();
         try {
@@ -469,162 +606,284 @@
             if (res.data.success) {
                 allData = res.data.data || [];
                 renderTable(allData);
-            } else renderEmpty();
-        } catch(e) {
+            } else {
+                renderEmpty();
+            }
+        } catch (e) {
             showNotification('Gagal memuat data', 'error');
             renderEmpty();
-        } finally { hideLoading(); }
+        } finally {
+            hideLoading();
+        }
     }
 
+    // =====================
+    // RENDER TABLE
+    // =====================
     function renderTable(data) {
         if (!data || data.length === 0) { renderEmpty(); return; }
-        el.tableBody.innerHTML = '';
-        data.forEach(item => el.tableBody.appendChild(createRow(item)));
+        elForm.tableBody.innerHTML = '';
+        data.forEach(item => elForm.tableBody.appendChild(createRow(item)));
     }
 
     function createRow(item) {
         const tr = document.createElement('tr');
 
-        const extraCol1 = isMusnah
-            ? (item.jangka_simpan || '-')
-            : (item.lokasi_simpan || '-');
-        const extraCol2 = isMusnah
-            ? (item.nasib_akhir ? `<span class="badge badge-default">${item.nasib_akhir}</span>` : '-')
-            : (item.nomor_boks || '-');
-
-        tr.innerHTML = `
-            <td class="td-no">${item.no_urut || '-'}</td>
-            <td class="td-kode"><code style="color:var(--primary-light);font-size:12px">${item.kode_klasifikasi || '-'}</code></td>
-            <td class="td-uraian"><div class="uraian-text">${item.uraian_informasi || '-'}</div></td>
-            <td class="td-waktu">${item.kurun_waktu || '-'}</td>
-            <td class="td-jumlah">${item.jumlah || '-'}</td>
-            <td class="td-kondisi">${getKondisiBadge(item.kondisi)}</td>
-            <td class="td-extra">${extraCol1}</td>
-            <td class="td-extra">${extraCol2}</td>
-            <td class="td-ket">${item.keterangan || '-'}</td>
-            ${canEdit ? `
-            <td class="td-aksi">
-                <div class="row-actions">
-                    <button class="btn-icon edit" title="Edit"><i class="fas fa-edit"></i></button>
-                    <button class="btn-icon delete" title="Hapus"><i class="fas fa-trash"></i></button>
-                </div>
-            </td>` : ''}
-        `;
+        if (isMusnah) {
+            tr.innerHTML = `
+                <td class="td-no">${item.no || '-'}</td>
+                <td class="td-kode">
+                    <code style="color:var(--primary-light);font-size:12px">
+                        ${item.kode_klasifikasi || '-'}
+                    </code>
+                </td>
+                <td class="td-uraian">
+                    <div class="uraian-text">${item.uraian_informasi || '-'}</div>
+                </td>
+                <td class="td-waktu">${item.kurun_waktu || '-'}</td>
+                <td class="td-tingkat">${item.tingkat_perkembangan || '-'}</td>
+                <td class="td-jumlah">${item.jumlah || '-'}</td>
+                <td class="td-extra">${item.no_box || '-'}</td>
+                <td class="td-extra">${item.media_simpan || '-'}</td>
+                <td class="td-extra">${getKondisiBadge(item.kondisi_fisik)}</td>
+                <td class="td-extra">${item.nomor_folder || '-'}</td>
+                <td class="td-extra">${item.jangka_simpan || '-'}</td>
+                <td class="td-extra">
+                    ${item.nasib_akhir_arsip
+                        ? `<span class="badge badge-default">${item.nasib_akhir_arsip}</span>`
+                        : '-'}
+                </td>
+                <td class="td-extra">${item.lembar || '-'}</td>
+                <td class="td-ket">${item.keterangan || '-'}</td>
+                ${canEdit ? `
+                <td class="td-aksi">
+                    <div class="row-actions">
+                        <button class="btn-icon edit" title="Edit"><i class="fas fa-edit"></i></button>
+                        <button class="btn-icon delete" title="Hapus"><i class="fas fa-trash"></i></button>
+                    </div>
+                </td>` : ''}
+            `;
+        } else {
+            tr.innerHTML = `
+                <td class="td-no">${item.no || '-'}</td>
+                <td class="td-jenis">${item.jenis_arsip || '-'}</td>
+                <td class="td-extra">${item.no_box || '-'}</td>
+                <td class="td-extra">${item.no_berkas || '-'}</td>
+                <td class="td-extra">${item.no_perjanjian_kerjasama || '-'}</td>
+                <td class="td-extra">${item.pihak_i || '-'}</td>
+                <td class="td-extra">${item.pihak_ii || '-'}</td>
+                <td class="td-tingkat">${item.tingkat_perkembangan || '-'}</td>
+                <td class="td-tanggal">
+                    ${item.tanggal_berlaku
+                        ? new Date(item.tanggal_berlaku).toLocaleDateString('id-ID')
+                        : '-'}
+                </td>
+                <td class="td-tanggal">
+                    ${item.tanggal_berakhir
+                        ? new Date(item.tanggal_berakhir).toLocaleDateString('id-ID')
+                        : '-'}
+                </td>
+                <td class="td-extra">${item.media || '-'}</td>
+                <td class="td-jumlah">${item.jumlah || '-'}</td>
+                <td class="td-extra">${item.jangka_simpan || '-'}</td>
+                <td class="td-extra">${item.lokasi_simpan || '-'}</td>
+                <td class="td-extra">${item.metode_perlindungan || '-'}</td>
+                <td class="td-ket">${item.keterangan || '-'}</td>
+                ${canEdit ? `
+                <td class="td-aksi">
+                    <div class="row-actions">
+                        <button class="btn-icon edit" title="Edit"><i class="fas fa-edit"></i></button>
+                        <button class="btn-icon delete" title="Hapus"><i class="fas fa-trash"></i></button>
+                    </div>
+                </td>` : ''}
+            `;
+        }
 
         if (canEdit) {
-            tr.querySelector('.edit').addEventListener('click', () => openEdit(item.id));
-            tr.querySelector('.delete').addEventListener('click', () => deleteItem(item.id));
+            tr.querySelector('.edit')?.addEventListener('click', () => openEdit(item.id));
+            tr.querySelector('.delete')?.addEventListener('click', () => deleteItem(item.id));
         }
 
         return tr;
     }
 
     function renderEmpty() {
-        const colspan = canEdit ? 10 : 9;
-        el.tableBody.innerHTML = `
+        const colspan = isMusnah ? (canEdit ? 15 : 14) : (canEdit ? 17 : 16);
+        elForm.tableBody.innerHTML = `
             <tr><td colspan="${colspan}">
                 <div class="empty-state">
                     <i class="fas fa-inbox"></i>
                     <h3>Belum Ada Data Arsip</h3>
-                    <p>Tambahkan data arsip untuk tahun ${tahunId}.</p>
+                    <p>Tambahkan data arsip untuk tahun ini.</p>
                 </div>
             </td></tr>`;
     }
 
-    // Search
-    el.searchInput.addEventListener('input', e => {
+    // =====================
+    // SEARCH
+    // =====================
+    elForm.searchInput?.addEventListener('input', e => {
         const q = e.target.value.toLowerCase();
-        renderTable(allData.filter(d =>
-            (d.uraian_informasi || '').toLowerCase().includes(q) ||
-            (d.kode_klasifikasi || '').toLowerCase().includes(q)
-        ));
+        renderTable(allData.filter(d => {
+            if (isMusnah) {
+                return (d.uraian_informasi || '').toLowerCase().includes(q)
+                    || (d.kode_klasifikasi || '').toLowerCase().includes(q);
+            }
+            return (d.jenis_arsip || '').toLowerCase().includes(q)
+                || (d.pihak_i || '').toLowerCase().includes(q)
+                || (d.pihak_ii || '').toLowerCase().includes(q);
+        }));
     });
 
-    // Modal
+    // =====================
+    // MODAL OPEN ADD
+    // =====================
     function openAdd() {
         resetForm();
         document.getElementById('modalTitle').textContent = 'Tambah Data Arsip';
         document.getElementById('submitText').textContent = 'Simpan';
-        // Auto isi no urut berikutnya
-        const nextNo = allData.length > 0 ? Math.max(...allData.map(d => d.no_urut || 0)) + 1 : 1;
-        document.getElementById('fNoUrut').value = nextNo;
-        el.mainModal.style.display = 'flex';
+        const nextNo = allData.length > 0
+            ? Math.max(...allData.map(d => d.no || 0)) + 1
+            : 1;
+        setField('fNo', nextNo);
+        elForm.mainModal.style.display = 'flex';
     }
 
+    // =====================
+    // MODAL OPEN EDIT
+    // =====================
     async function openEdit(id) {
         showLoading();
         try {
-            const res = await axios.get(`/api/kategori/${kategoriId}/detail/${detailId}/tahun/${tahunId}/input/${id}/edit`);
+            const res = await axios.get(
+                `/api/kategori/${kategoriId}/detail/${detailId}/tahun/${tahunId}/input/${id}/edit`
+            );
             if (res.data.success) {
                 const d = res.data.data;
                 resetForm();
                 currentId = d.id;
+
                 document.getElementById('modalTitle').textContent = 'Edit Data Arsip';
                 document.getElementById('submitText').textContent = 'Update';
-                document.getElementById('itemId').value  = d.id;
-                document.getElementById('fNoUrut').value = d.no_urut || '';
-                document.getElementById('fKode').value   = d.kode_klasifikasi || '';
-                document.getElementById('fUraian').value = d.uraian_informasi || '';
-                document.getElementById('fKurun').value  = d.kurun_waktu || '';
-                document.getElementById('fJumlah').value = d.jumlah || '';
-                document.getElementById('fTingkat').value = d.tingkat_perkembangan || '';
-                document.getElementById('fMedia').value   = d.media_simpan || '';
-                document.getElementById('fKondisi').value = d.kondisi || '';
-                document.getElementById('fKet').value     = d.keterangan || '';
-                // Kolom khusus
+                document.getElementById('itemId').value = d.id;
+
+                setField('fNo', d.no);
+
                 if (isMusnah) {
-                    document.getElementById('fJangka').value  = d.jangka_simpan || '';
-                    document.getElementById('fNasib').value   = d.nasib_akhir || '';
-                    document.getElementById('fRetensi').value = d.tanggal_habis_retensi || '';
+                    setField('fKodeKlasifikasi', d.kode_klasifikasi);
+                    setField('fUraian',          d.uraian_informasi);
+                    setField('fKurun',           d.kurun_waktu);
+                    setField('fTingkat',         d.tingkat_perkembangan);
+                    setField('fJumlah',          d.jumlah);
+                    setField('fNoBox',           d.no_box);
+                    setField('fMediaSimpan',     d.media_simpan);
+                    setField('fKondisi',         d.kondisi_fisik);
+                    setField('fNomorFolder',     d.nomor_folder);
+                    setField('fJangka',          d.jangka_simpan);
+                    setField('fNasib',           d.nasib_akhir_arsip);
+                    setField('fLembar',          d.lembar);
+                    setField('fKet',             d.keterangan);
                 } else {
-                    document.getElementById('fLokasi').value = d.lokasi_simpan || '';
-                    document.getElementById('fBoks').value   = d.nomor_boks || '';
+                    setField('fJenisArsip',      d.jenis_arsip);
+                    setField('fNoBox',           d.no_box);
+                    setField('fNoBerkas',        d.no_berkas);
+                    setField('fNoPerjanjian',    d.no_perjanjian_kerjasama);
+                    setField('fPihakI',          d.pihak_i);
+                    setField('fPihakII',         d.pihak_ii);
+                    setField('fTingkat',         d.tingkat_perkembangan);
+                    setField('fTanggalBerlaku',  d.tanggal_berlaku);
+                    setField('fTanggalBerakhir', d.tanggal_berakhir);
+                    setField('fMedia',           d.media);
+                    setField('fJumlah',          d.jumlah);
+                    setField('fJangka',          d.jangka_simpan);
+                    setField('fLokasi',          d.lokasi_simpan);
+                    setField('fMetode',          d.metode_perlindungan);
+                    setField('fKet',             d.keterangan);
                 }
-                el.mainModal.style.display = 'flex';
+
+                elForm.mainModal.style.display = 'flex';
             }
-        } catch(e) { showNotification('Gagal memuat data', 'error'); }
-        finally { hideLoading(); }
+        } catch (e) {
+            showNotification('Gagal memuat data', 'error');
+        } finally {
+            hideLoading();
+        }
     }
 
+    // =====================
+    // MODAL CLOSE
+    // =====================
     function closeModal() {
-        el.mainModal.style.display = 'none';
+        elForm.mainModal.style.display = 'none';
         resetForm();
     }
 
-    // Submit
-    el.mainForm.addEventListener('submit', async e => {
+    // =====================
+    // FORM SUBMIT
+    // =====================
+    elForm.mainForm?.addEventListener('submit', async e => {
         e.preventDefault();
         clearErrors();
 
-        const formData = new FormData(el.mainForm);
-        const data = Object.fromEntries(formData);
+        // Validasi client-side: No wajib
+        const noVal = document.getElementById('fNo')?.value;
+        if (!noVal) {
+            const err = document.getElementById('noError');
+            if (err) { err.textContent = 'No harus diisi'; err.style.display = 'block'; }
+            showNotification('No harus diisi', 'error');
+            return;
+        }
+
+        // Validasi Vital & Permanen: Jenis Arsip wajib
+        if (!isMusnah) {
+            const jenisVal = document.getElementById('fJenisArsip')?.value;
+            if (!jenisVal) {
+                const err = document.getElementById('jenis_arsipError');
+                if (err) { err.textContent = 'Jenis Arsip harus dipilih'; err.style.display = 'block'; }
+                showNotification('Jenis Arsip harus dipilih', 'error');
+                return;
+            }
+        }
+
+        const formData = new FormData(elForm.mainForm);
+        if (currentId) formData.append('_method', 'PUT');
 
         const url = currentId
             ? `/api/kategori/${kategoriId}/detail/${detailId}/tahun/${tahunId}/input/${currentId}`
             : `/api/kategori/${kategoriId}/detail/${detailId}/tahun/${tahunId}/input`;
-        const method = currentId ? 'put' : 'post';
 
         showLoading();
         try {
-            const res = await axios({ method, url, data, headers: { 'X-CSRF-TOKEN': csrfToken } });
+            const res = await axios.post(url, formData, {
+                headers: { 'X-CSRF-TOKEN': csrfToken }
+            });
             if (res.data.success) {
                 showNotification(res.data.message, 'success');
-                loadStats(); loadData(); closeModal();
+                await loadStats();
+                await loadData();
+                closeModal();
             }
-        } catch(e) {
+        } catch (e) {
             if (e.response?.status === 422) {
                 const errors = e.response.data.errors;
                 Object.keys(errors).forEach(key => {
-                    const el = document.getElementById(`${key}Error`);
-                    if (el) { el.textContent = errors[key][0]; el.style.display = 'block'; }
+                    const err = document.getElementById(`${key}Error`);
+                    if (err) { err.textContent = errors[key][0]; err.style.display = 'block'; }
                 });
                 showNotification('Periksa kembali form Anda', 'error');
+                console.log('Validation errors:', errors);
             } else {
+                console.error('Submit error:', e);
                 showNotification(e.response?.data?.message || 'Terjadi kesalahan', 'error');
             }
-        } finally { hideLoading(); }
+        } finally {
+            hideLoading();
+        }
     });
 
+    // =====================
+    // DELETE
+    // =====================
     async function deleteItem(id) {
         if (!confirm('Yakin ingin menghapus data arsip ini?')) return;
         showLoading();
@@ -635,23 +894,46 @@
             );
             if (res.data.success) {
                 showNotification(res.data.message, 'success');
-                loadStats(); loadData();
+                await loadStats();
+                await loadData();
             }
-        } catch(e) { showNotification('Gagal menghapus data', 'error'); }
-        finally { hideLoading(); }
+        } catch (e) {
+            showNotification('Gagal menghapus data', 'error');
+        } finally {
+            hideLoading();
+        }
     }
 
-    // Init
+    // =====================
+    // EVENT LISTENERS
+    // =====================
     if (canEdit) {
         document.getElementById('addBtn')?.addEventListener('click', openAdd);
         document.getElementById('fabBtn')?.addEventListener('click', openAdd);
     }
-    document.getElementById('refreshBtn').addEventListener('click', () => { loadStats(); loadData(); });
-    document.getElementById('closeModalBtn').addEventListener('click', closeModal);
-    document.getElementById('cancelBtn').addEventListener('click', closeModal);
-    el.mainModal.addEventListener('click', e => { if (e.target === el.mainModal) closeModal(); });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-    document.addEventListener('DOMContentLoaded', () => { loadStats(); loadData(); });
+    document.getElementById('refreshBtn')?.addEventListener('click', () => {
+        loadStats();
+        loadData();
+    });
+
+    document.getElementById('closeModalBtn')?.addEventListener('click', closeModal);
+    document.getElementById('cancelBtn')?.addEventListener('click', closeModal);
+
+    elForm.mainModal?.addEventListener('click', e => {
+        if (e.target === elForm.mainModal) closeModal();
+    });
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && elForm.mainModal?.style.display === 'flex') closeModal();
+    });
+
+    // =====================
+    // INIT
+    // =====================
+    document.addEventListener('DOMContentLoaded', () => {
+        loadStats();
+        loadData();
+    });
 </script>
 @endsection
