@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ArsipExportController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BerkasController;
 use App\Http\Controllers\KategoriController;
@@ -130,4 +131,9 @@ Route::middleware('auth')->group(function () {
         Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
         Route::delete('/users/{id}', [UserController::class, 'delete'])->name('users.delete')->middleware('permission:user.read'); 
     });
+
+    Route::get(
+        '/kategori/{kategori}/detail/{detail}/tahun/{tahun}/export',
+        [ArsipExportController::class, 'export']
+    )->name('kategori.detail.tahun.input.export');
 });

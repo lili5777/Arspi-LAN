@@ -1,0 +1,365 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Kategori;
+use App\Models\KategoriDetail;
+use App\Models\TahunKategoriDetail;
+use App\Models\ArsipInput;
+use Carbon\Carbon;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+
+class ArsipExportController extends Controller
+{
+    // Ubah sesuai instansi
+    private const TTD_KOTA    = 'Makassar';
+    private const TTD_JABATAN = 'Kepala Bagian Umum';
+    private const TTD_NAMA    = 'Zulchaidir, S.Sos.,MPA';
+    private const TTD_NIP     = 'NIP. 19830115 200912 1 003';
+
+    public function export($kategoriId, $detailId, $tahunId)
+    {
+        $kategori       = Kategori::findOrFail($kategoriId);
+        $kategoriDetail = KategoriDetail::where('id_kategori', $kategoriId)->findOrFail($detailId);
+        $tahunDetail    = TahunKategoriDetail::where('id_kategori_detail', $detailId)->findOrFail($tahunId);
+
+        $inputs = ArsipInput::where('id_tahun_kategori_detail', $tahunId)
+            ->orderBy('no', 'asc')
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        if ($kategori->name === 'Daftar Arsip Usul Musnah') {
+            return $this->exportMusnah($inputs, $kategoriDetail, $tahunDetail);
+        }
+
+        return $this->exportVitalPermanen($inputs, $kategori, $kategoriDetail, $tahunDetail);
+    }
+
+    // =========================================================
+    // EXPORT: DAFTAR ARSIP USUL MUSNAH
+    // Header baris 5-6 (abu-abu), data mulai baris 7
+    // TTD di kolom K, 5 baris setelah data terakhir
+    // =========================================================
+    private function exportMusnah($inputs, $kategoriDetail, $tahunDetail)
+    {
+        $spreadsheet = new Spreadsheet();
+        $ws          = $spreadsheet->getActiveSheet();
+        $ws->setTitle('Usul Musnah');
+        $spreadsheet->getDefaultStyle()->getFont()->setName('Times New Roman')->setSize(11);
+
+        foreach ([
+            'A' => 6.41,  'B' => 16.7,  'C' => 59.56,
+            'D' => 11.28, 'E' => 17.56, 'F' => 10.85, 'G' => 8.7,
+            'H' => 10.85, 'I' => 13.14, 'J' => 12.14, 'K' => 15.41,
+            'L' => 8.7,   'M' => 8.7,
+        ] as $col => $w) {
+            $ws->getColumnDimension($col)->setWidth($w);
+        }
+
+        // Baris 1: Judul
+        $ws->mergeCells('A1:M1');
+        $ws->setCellValue('A1', 'DAFTAR ARSIP INAKTIF USUL MUSNAH');
+        $ws->getStyle('A1')->applyFromArray([
+            'font'      => ['bold' => true, 'size' => 11],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
+        ]);
+        $ws->getRowDimension(1)->setRowHeight(18.95);
+
+        // Baris 2: Tahun
+        $ws->mergeCells('A2:M2');
+        $ws->setCellValue('A2', 'TAHUN ' . $tahunDetail->name);
+        $ws->getStyle('A2')->applyFromArray([
+            'font'      => ['bold' => true, 'size' => 11],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
+        ]);
+        $ws->getRowDimension(2)->setRowHeight(18.95);
+
+        // Baris 3: Pencipta Arsip
+        $ws->mergeCells('A3:D3');
+        $ws->setCellValue('A3', 'Pencipta Arsip : Puslatbang KMP LAN');
+        $ws->getStyle('A3')->applyFromArray([
+            'font'      => ['bold' => true, 'size' => 11],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT],
+        ]);
+        $ws->getRowDimension(3)->setRowHeight(21.75);
+        $ws->getRowDimension(4)->setRowHeight(7.5);
+
+        // Baris 5-6: Header (merge tiap kolom, fill abu-abu) — tanpa Unit Kerja
+        $headers = [
+            'A' => 'No.',
+            'B' => 'Kode Klasifikasi',
+            'C' => 'Uraian Informasi',
+            'D' => 'Kurun Waktu',
+            'E' => 'Tingkat Perkembangan',
+            'F' => 'Jumlah',
+            'G' => 'No. Box',
+            'H' => 'Media Simpan',
+            'I' => 'Kondisi Fisik',
+            'J' => 'Nomor Folder',
+            'K' => 'Jangka Simpan dan Nasib Akhir Arsip',
+            'L' => 'Ket',
+            'M' => 'Lbr',
+        ];
+
+        foreach (array_keys($headers) as $col) {
+            $ws->mergeCells("{$col}5:{$col}6");
+        }
+
+        $hStyle = [
+            'font'      => ['bold' => true, 'size' => 11],
+            'fill'      => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '969696']],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical'   => Alignment::VERTICAL_CENTER,
+                'wrapText'   => true,
+            ],
+            'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
+        ];
+        foreach ($headers as $col => $label) {
+            $ws->setCellValue("{$col}5", $label);
+            $ws->getStyle("{$col}5:{$col}6")->applyFromArray($hStyle);
+        }
+        $ws->getRowDimension(5)->setRowHeight(26.25);
+        $ws->getRowDimension(6)->setRowHeight(30);
+
+        // Data baris 7+
+        $dStyle = [
+            'alignment' => ['vertical' => Alignment::VERTICAL_TOP, 'wrapText' => true],
+            'borders'   => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
+            'font'      => ['size' => 11],
+        ];
+
+        $row = 7;
+        foreach ($inputs as $i => $item) {
+            $jangkaNasib = trim(
+                ($item->jangka_simpan ?? '') .
+                ($item->nasib_akhir_arsip ? ' / ' . $item->nasib_akhir_arsip : '')
+            );
+
+            $ws->setCellValue("A{$row}", $i + 1);
+            $ws->setCellValue("B{$row}", $item->kode_klasifikasi ?? '');
+            $ws->setCellValue("C{$row}", $item->uraian_informasi ?? '');
+            $ws->setCellValue("D{$row}", $item->kurun_waktu ?? '');
+            $ws->setCellValue("E{$row}", $item->tingkat_perkembangan ?? '');
+            $ws->setCellValue("F{$row}", $item->jumlah ?? '');
+            $ws->setCellValue("G{$row}", $item->no_box ?? '');
+            $ws->setCellValue("H{$row}", $item->media_simpan ?? '');
+            $ws->setCellValue("I{$row}", $item->kondisi_fisik ?? '');
+            $ws->setCellValue("J{$row}", $item->nomor_folder ?? '');
+            $ws->setCellValue("K{$row}", $jangkaNasib);
+            $ws->setCellValue("L{$row}", $item->keterangan ?? '');
+            $ws->setCellValue("M{$row}", $item->lembar ?? '');
+
+            $ws->getStyle("A{$row}:M{$row}")->applyFromArray($dStyle);
+            $ws->getStyle("A{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $ws->getStyle("G{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $ws->getStyle("M{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+            $lines = max(1, ceil(mb_strlen($item->uraian_informasi ?? '') / 60));
+            $ws->getRowDimension($row)->setRowHeight(max(20, $lines * 15));
+            $row++;
+        }
+
+        // TTD: kolom K, 5 baris setelah baris data terakhir
+        $tanggal = Carbon::now()->locale('id')->isoFormat('DD MMMM YYYY');
+        $ws->setCellValue("K" . ($row + 5),  self::TTD_KOTA . ',  ' . $tanggal);
+        $ws->setCellValue("K" . ($row + 6),  self::TTD_JABATAN);
+        $ws->setCellValue("K" . ($row + 11), self::TTD_NAMA);
+        $ws->setCellValue("K" . ($row + 12), self::TTD_NIP);
+
+        foreach ([$row + 5, $row + 6, $row + 11, $row + 12] as $r) {
+            $ws->getStyle("K{$r}")->applyFromArray([
+                'font'      => ['size' => 11],
+                'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT],
+            ]);
+        }
+
+        // Page setup
+        $ws->getPageSetup()
+            ->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE)
+            ->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4)
+            ->setFitToWidth(1)->setFitToHeight(0);
+        $ws->getPageMargins()->setTop(0.75)->setBottom(0.75)->setLeft(0.5)->setRight(0.5);
+
+        $filename = 'Daftar_Arsip_Usul_Musnah_' . str_replace(' ', '_', $tahunDetail->name) . '.xlsx';
+        return $this->streamExcel($spreadsheet, $filename);
+    }
+
+    // =========================================================
+    // EXPORT: DAFTAR ARSIP VITAL / PERMANEN
+    // Header baris 6 (abu-abu), nomor urut baris 7 (abu-abu), data mulai baris 8
+    // TTD di kolom N, 5 baris setelah data terakhir
+    // =========================================================
+    private function exportVitalPermanen($inputs, $kategori, $kategoriDetail, $tahunDetail)
+    {
+        $spreadsheet = new Spreadsheet();
+        $ws          = $spreadsheet->getActiveSheet();
+        $ws->setTitle('Arsip Vital');
+        $spreadsheet->getDefaultStyle()->getFont()->setName('Times New Roman')->setSize(11);
+
+        foreach ([
+            'A' => 5.57,  'B' => 42.14, 'C' => 6.86,  'D' => 9.0,
+            'E' => 16.86, 'F' => 14.0,  'G' => 13.86, 'H' => 17.29,
+            'I' => 15.43, 'J' => 14.57, 'K' => 8.43,  'L' => 10.71,
+            'M' => 12.43, 'N' => 12.14, 'O' => 16.0,  'P' => 10.71,
+        ] as $col => $w) {
+            $ws->getColumnDimension($col)->setWidth($w);
+        }
+
+        // Baris 1: Judul
+        $ws->mergeCells('A1:P1');
+        $ws->setCellValue('A1', strtoupper($kategori->name));
+        $ws->getStyle('A1')->applyFromArray([
+            'font'      => ['bold' => true, 'size' => 11],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
+        ]);
+        $ws->getRowDimension(1)->setRowHeight(18);
+
+        // Baris 2: Tahun
+        $ws->mergeCells('A2:P2');
+        $ws->setCellValue('A2', 'TAHUN PENCIPTAAN ' . $tahunDetail->name);
+        $ws->getStyle('A2')->applyFromArray([
+            'font'      => ['bold' => true, 'size' => 11],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
+        ]);
+        $ws->getRowDimension(2)->setRowHeight(18);
+
+        // Baris 3: kosong
+        $ws->mergeCells('A3:P3');
+        $ws->getRowDimension(3)->setRowHeight(18);
+
+        // Baris 4: Unit Kerja
+        $ws->setCellValue('A4', 'Unit Kerja : Pusjar SKMP LAN');
+        $ws->getStyle('A4')->applyFromArray([
+            'font'      => ['size' => 11],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT],
+        ]);
+        $ws->getRowDimension(4)->setRowHeight(16.5);
+        $ws->getRowDimension(5)->setRowHeight(5);
+
+        // Baris 6: Header — fill abu-abu #969696
+        $headers = [
+            'A' => 'No.',               'B' => 'Jenis Arsip',
+            'C' => 'No Box',            'D' => 'No Berkas',
+            'E' => 'No. Perjanjian Kerjasama',
+            'F' => 'Pihak I',           'G' => 'Pihak II',
+            'H' => 'Tingkat Perkembangan',
+            'I' => 'Tanggal Berlaku',   'J' => 'Tanggal Berakhir',
+            'K' => 'Media',             'L' => 'Jumlah',
+            'M' => 'Jangka Simpan',     'N' => 'Lokasi Simpan',
+            'O' => 'Metode Perlindungan', 'P' => 'Ket',
+        ];
+
+        $hStyle = [
+            'font'      => ['bold' => true, 'size' => 11, 'color' => ['rgb' => '000000']],
+            'fill'      => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '969696']],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical'   => Alignment::VERTICAL_CENTER,
+                'wrapText'   => true,
+            ],
+            'borders'   => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
+        ];
+        foreach ($headers as $col => $label) {
+            $ws->setCellValue("{$col}6", $label);
+            $ws->getStyle("{$col}6")->applyFromArray($hStyle);
+        }
+        $ws->getRowDimension(6)->setRowHeight(36.75);
+
+        // Baris 7: Nomor urut kolom — fill abu-abu #969696
+        $nStyle = [
+            'font'      => ['bold' => true, 'size' => 11, 'color' => ['rgb' => '000000']],
+            'fill'      => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '969696']],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical'   => Alignment::VERTICAL_CENTER,
+            ],
+            'borders'   => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
+        ];
+        foreach (array_keys($headers) as $idx => $col) {
+            $ws->setCellValue("{$col}7", $idx + 1);
+            $ws->getStyle("{$col}7")->applyFromArray($nStyle);
+        }
+        $ws->getRowDimension(7)->setRowHeight(20.25);
+
+        // Data baris 8+
+        $dStyle = [
+            'alignment' => ['vertical' => Alignment::VERTICAL_TOP, 'wrapText' => true],
+            'borders'   => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
+            'font'      => ['size' => 11],
+        ];
+
+        $row = 8;
+        foreach ($inputs as $i => $item) {
+            $ws->setCellValue("A{$row}", $i + 1);
+            $ws->setCellValue("B{$row}", $item->jenis_arsip ?? '');
+            $ws->setCellValue("C{$row}", $item->no_box ?? '');
+            $ws->setCellValue("D{$row}", $item->no_berkas ?? '');
+            $ws->setCellValue("E{$row}", $item->no_perjanjian_kerjasama ?? '');
+            $ws->setCellValue("F{$row}", $item->pihak_i ?? '');
+            $ws->setCellValue("G{$row}", $item->pihak_ii ?? '');
+            $ws->setCellValue("H{$row}", $item->tingkat_perkembangan ?? '');
+            $ws->setCellValue("I{$row}", $item->tanggal_berlaku
+                ? Carbon::parse($item->tanggal_berlaku)->format('d-m-Y')  : '');
+            $ws->setCellValue("J{$row}", $item->tanggal_berakhir
+                ? Carbon::parse($item->tanggal_berakhir)->format('d-m-Y') : '');
+            $ws->setCellValue("K{$row}", $item->media ?? '');
+            $ws->setCellValue("L{$row}", $item->jumlah ?? '');
+            $ws->setCellValue("M{$row}", $item->jangka_simpan ?? '');
+            $ws->setCellValue("N{$row}", $item->lokasi_simpan ?? '');
+            $ws->setCellValue("O{$row}", $item->metode_perlindungan ?? '');
+            $ws->setCellValue("P{$row}", $item->keterangan ?? '');
+
+            $ws->getStyle("A{$row}:P{$row}")->applyFromArray($dStyle);
+            $ws->getStyle("A{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $ws->getStyle("C{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $ws->getStyle("D{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $ws->getStyle("L{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+            $lines = max(1, ceil(mb_strlen($item->jenis_arsip ?? '') / 30));
+            $ws->getRowDimension($row)->setRowHeight(max(20, $lines * 15));
+            $row++;
+        }
+
+        // TTD: kolom N, 5 baris setelah baris data terakhir
+        $tanggal = Carbon::now()->locale('id')->isoFormat('DD MMMM YYYY');
+        $ws->setCellValue("N" . ($row + 5),  self::TTD_KOTA . ', ' . $tanggal);
+        $ws->setCellValue("N" . ($row + 6),  self::TTD_JABATAN);
+        $ws->setCellValue("N" . ($row + 11), self::TTD_NAMA);
+        $ws->setCellValue("N" . ($row + 12), self::TTD_NIP);
+
+        foreach ([$row + 5, $row + 6, $row + 11, $row + 12] as $r) {
+            $ws->getStyle("N{$r}")->applyFromArray([
+                'font'      => ['size' => 11],
+                'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT],
+            ]);
+        }
+
+        // Page setup
+        $ws->getPageSetup()
+            ->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE)
+            ->setPaperSize(5) // Legal
+            ->setFitToWidth(1)->setFitToHeight(0);
+        $ws->getPageMargins()->setTop(0.75)->setBottom(0.75)->setLeft(0.5)->setRight(0.5);
+
+        $safeKategori = str_replace(' ', '_', $kategori->name);
+        $filename     = "{$safeKategori}_{$tahunDetail->name}.xlsx";
+        return $this->streamExcel($spreadsheet, $filename);
+    }
+
+    private function streamExcel(Spreadsheet $spreadsheet, string $filename)
+    {
+        $writer = new Xlsx($spreadsheet);
+        return response()->streamDownload(function () use ($writer) {
+            $writer->save('php://output');
+        }, $filename, [
+            'Content-Type'        => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Cache-Control'       => 'max-age=0',
+        ]);
+    }
+}
