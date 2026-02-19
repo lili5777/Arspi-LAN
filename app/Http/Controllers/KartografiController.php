@@ -14,10 +14,10 @@ class KartografiController extends Controller
 {
     public function index($kategoriId)
     {
-        $kategori = Kategori::findOrFail($kategoriId);
+        $kategori     = Kategori::findOrFail($kategoriId);
         $totalDokumen = ArsipKartografis::where('id_kategori', $kategoriId)->count();
-        $totalSize = ArsipKartografis::where('id_kategori', $kategoriId)->sum('size');
-        $userRole = Auth::user()->role->name ?? 'user';
+        $totalSize    = ArsipKartografis::where('id_kategori', $kategoriId)->sum('size');
+        $userRole     = Auth::user()->role->name ?? 'user';
 
         return view('admin.kartografi', compact('kategori', 'totalDokumen', 'totalSize', 'userRole'));
     }
@@ -87,16 +87,23 @@ class KartografiController extends Controller
 
             $file     = $request->file('file');
             $fileName = time() . '_' . $file->getClientOriginalName();
-            $path     = $file->storeAs('kartografi', $fileName, 'public');
+
+            // Upload file ke Google Drive (folder 'kartografi')
+            $path = Storage::disk('google')->putFileAs('kartografi', $file, $fileName);
+
+            // Ambil Google Drive file ID
+            $fileId = Storage::disk('google')->getAdapter()->getMetadata('kartografi/' . $fileName)['extraMetadata']['id']
+                      ?? null;
 
             ArsipKartografis::create([
-                'id_kategori'   => $kategoriId,
-                'name'          => $request->name,
-                'desc'          => $request->desc,
-                'date'          => $request->date,
-                'size'          => $file->getSize(),
-                'file_path'     => $path,
-                'original_name' => $file->getClientOriginalName(),
+                'id_kategori'    => $kategoriId,
+                'name'           => $request->name,
+                'desc'           => $request->desc,
+                'date'           => $request->date,
+                'size'           => $file->getSize(),
+                'file_path'      => $path,
+                'google_file_id' => $fileId,
+                'original_name'  => $file->getClientOriginalName(),
             ]);
 
             DB::commit();
@@ -159,18 +166,22 @@ class KartografiController extends Controller
             ];
 
             if ($request->hasFile('file')) {
-                // Hapus file lama
-                if ($item->file_path && Storage::disk('public')->exists($item->file_path)) {
-                    Storage::disk('public')->delete($item->file_path);
+                // Hapus file lama dari Google Drive
+                if ($item->file_path && Storage::disk('google')->exists($item->file_path)) {
+                    Storage::disk('google')->delete($item->file_path);
                 }
 
                 $file     = $request->file('file');
                 $fileName = time() . '_' . $file->getClientOriginalName();
-                $path     = $file->storeAs('kartografi', $fileName, 'public');
+                $path     = Storage::disk('google')->putFileAs('kartografi', $file, $fileName);
 
-                $updateData['file_path']     = $path;
-                $updateData['size']          = $file->getSize();
-                $updateData['original_name'] = $file->getClientOriginalName();
+                $fileId = Storage::disk('google')->getAdapter()->getMetadata('kartografi/' . $fileName)['extraMetadata']['id']
+                          ?? null;
+
+                $updateData['file_path']      = $path;
+                $updateData['size']           = $file->getSize();
+                $updateData['original_name']  = $file->getClientOriginalName();
+                $updateData['google_file_id'] = $fileId;
             }
 
             $item->update($updateData);
@@ -198,8 +209,9 @@ class KartografiController extends Controller
         try {
             DB::beginTransaction();
 
-            if ($item->file_path && Storage::disk('public')->exists($item->file_path)) {
-                Storage::disk('public')->delete($item->file_path);
+            // Hapus file dari Google Drive
+            if ($item->file_path && Storage::disk('google')->exists($item->file_path)) {
+                Storage::disk('google')->delete($item->file_path);
             }
 
             $item->delete();
@@ -224,11 +236,18 @@ class KartografiController extends Controller
     {
         $item = ArsipKartografis::where('id_kategori', $kategoriId)->findOrFail($kartografiId);
 
-        if (!$item->file_path || !Storage::disk('public')->exists($item->file_path)) {
+        if (!$item->file_path || !Storage::disk('google')->exists($item->file_path)) {
             return response()->json(['success' => false, 'message' => 'File tidak ditemukan'], 404);
         }
 
-        return Storage::disk('public')->download($item->file_path, $item->original_name ?? $item->name);
+        $fileContent = Storage::disk('google')->get($item->file_path);
+        $mimeType    = Storage::disk('google')->mimeType($item->file_path);
+        $fileName    = $item->original_name ?? $item->name;
+
+        return response($fileContent, 200, [
+            'Content-Type'        => $mimeType,
+            'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+        ]);
     }
 
     private function formatSize($bytes)

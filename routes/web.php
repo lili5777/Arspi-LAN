@@ -11,6 +11,9 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\KartografiController;
 use App\Http\Controllers\ArsipInputController;
+use Illuminate\Support\Facades\Storage;
+
+Route::get('/tes-drive', function () { Storage::disk('google')->put('test.txt', 'Hello Google Drive!'); return '✅ Google Drive CONNECTED'; });
 
 
 // Route Authentication
