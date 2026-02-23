@@ -19,7 +19,7 @@ class ArsipInput extends Model
         // UMUM
         'no',
 
-        // GAMBAR 1 – USUL MUSNAH
+        // TEMPLATE 1 – USUL MUSNAH
         'kode_klasifikasi',
         'uraian_informasi',
         'kurun_waktu',
@@ -34,7 +34,7 @@ class ArsipInput extends Model
         'keterangan',
         'lembar',
 
-        // GAMBAR 2 – VITAL & PERMANEN
+        // TEMPLATE 2 – VITAL & PERMANEN
         'jenis_arsip',
         'no_berkas',
         'no_perjanjian_kerjasama',
@@ -45,13 +45,29 @@ class ArsipInput extends Model
         'media',
         'lokasi_simpan',
         'metode_perlindungan',
+
+        // TEMPLATE 3 – ARSIP INAKTIF PERSURATAN
+        'no_berkas_persuratan',
+        'unit_kerja',
+        'nomor_item_arsip',
+        'kode_klasifikasi_persuratan',
+        'uraian_informasi_persuratan',
+        'tgl',
+        'tingkat_perkembangan_persuratan',
+        'jumlah_lembar',
+        'no_filling_cabinet',
+        'no_laci',
+        'no_folder_persuratan',
+        'klasifikasi_keamanan',
+        'keterangan_persuratan',
     ];
 
     protected $casts = [
-        'tanggal_berlaku' => 'date',
+        'tanggal_berlaku'  => 'date',
         'tanggal_berakhir' => 'date',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
+        'tgl'              => 'date',
+        'created_at'       => 'datetime',
+        'updated_at'       => 'datetime',
     ];
 
     public function tahunKategoriDetail(): BelongsTo
