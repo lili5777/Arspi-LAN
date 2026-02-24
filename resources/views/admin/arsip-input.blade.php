@@ -74,12 +74,64 @@ body::after{
 .btn-secondary:hover{background:var(--s3);color:var(--txt);border-color:var(--b3);transform:translateY(-1px);}
 .btn-success{background:linear-gradient(135deg,#059669,#10B981);color:#fff;box-shadow:0 4px 14px rgba(5,150,105,.3);}
 .btn-success:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(5,150,105,.4);}
-.search-bar{position:relative;z-index:1;margin-bottom:16px;}
+
+/* ===== FILTER PANEL ===== */
+.filter-panel{
+    position:relative;z-index:1;
+    background:var(--s2);border:1px solid var(--b1);border-radius:var(--r-lg);
+    padding:0;margin-bottom:16px;
+    backdrop-filter:blur(16px);box-shadow:var(--sh-sm);
+    overflow:hidden;
+    transition:all .3s cubic-bezier(.22,1,.36,1);
+}
+.filter-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--p6),transparent);}
+.filter-toggle{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 20px;cursor:pointer;
+    border:none;background:transparent;width:100%;text-align:left;
+    font-family:var(--ff-b);
+}
+.filter-toggle-left{display:flex;align-items:center;gap:10px;}
+.filter-toggle-label{font-size:13px;font-weight:600;color:var(--txt2);}
+.filter-active-count{
+    display:none;
+    background:linear-gradient(135deg,var(--p4),var(--p5));
+    color:#fff;font-size:10px;font-weight:700;
+    padding:2px 8px;border-radius:var(--r-full);
+    letter-spacing:.04em;
+}
+.filter-active-count.show{display:inline-flex;}
+.filter-toggle-icon{color:var(--muted);font-size:12px;transition:transform .3s;}
+.filter-panel.open .filter-toggle-icon{transform:rotate(180deg);}
+.filter-body{
+    display:none;padding:0 20px 20px;
+    border-top:1px solid var(--b1);
+    animation:fadeDown .25s ease both;
+}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+.filter-panel.open .filter-body{display:block;}
+.filter-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-top:16px;}
+.filter-group{}
+.filter-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px;display:block;}
+.filter-input{width:100%;padding:8px 11px;background:rgba(255,255,255,.9);border:1.5px solid var(--b2);border-radius:var(--r-md);color:var(--txt);font-size:12px;font-family:var(--ff-b);transition:all .25s;outline:none;}
+.filter-input::placeholder{color:rgba(144,128,192,.5);}
+.filter-input:focus{border-color:var(--p5);background:#fff;box-shadow:0 0 0 3px rgba(107,70,193,.08);}
+select.filter-input option{background:#F5F0FF;color:var(--txt);}
+.filter-actions{display:flex;gap:8px;margin-top:14px;align-items:center;flex-wrap:wrap;}
+.btn-filter-apply{padding:8px 16px;font-size:12px;}
+.btn-filter-reset{padding:8px 14px;font-size:12px;}
+.filter-separator{height:1px;background:var(--b1);margin:14px 0 0;}
+
+/* ===== SEARCH BAR ===== */
+.search-filter-row{position:relative;z-index:1;display:flex;gap:10px;margin-bottom:16px;align-items:center;}
+.search-bar{flex:1;position:relative;}
 .search-input{width:100%;padding:11px 16px 11px 44px;background:var(--s2);border:1.5px solid var(--b1);border-radius:var(--r-md);color:var(--txt);font-size:13px;font-family:var(--ff-b);backdrop-filter:blur(8px);transition:all .25s;outline:none;}
 .search-input::placeholder{color:var(--muted);}
 .search-input:focus{border-color:var(--p5);background:var(--s3);box-shadow:0 0 0 4px rgba(107,70,193,.08);}
 .search-icon{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;}
-.table-wrapper{position:relative;z-index:1;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r-lg);overflow:hidden;margin-bottom:80px;backdrop-filter:blur(16px);box-shadow:var(--sh-md);}
+
+/* ===== TABLE ===== */
+.table-wrapper{position:relative;z-index:1;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r-lg);overflow:hidden;backdrop-filter:blur(16px);box-shadow:var(--sh-md);}
 .table-wrapper::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--p5),var(--p6),transparent);}
 .table-scroll{overflow-x:auto;}
 .table{width:100%;border-collapse:collapse;min-width:1400px;}
@@ -101,6 +153,38 @@ body::after{
 .td-extra{min-width:120px;}
 .td-ket{min-width:150px;color:var(--muted);font-size:12px;}
 .td-aksi{width:90px;}
+
+/* ===== PAGINATION ===== */
+.table-footer{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 20px;border-top:1px solid var(--b1);
+    flex-wrap:wrap;gap:12px;
+    background:rgba(107,70,193,.02);
+}
+.pagination-info{font-size:12px;color:var(--muted);font-weight:500;}
+.pagination-info strong{color:var(--txt2);}
+.pagination-controls{display:flex;align-items:center;gap:4px;}
+.pg-btn{
+    min-width:32px;height:32px;border-radius:var(--r-sm);
+    display:inline-flex;align-items:center;justify-content:center;
+    background:transparent;border:1px solid transparent;
+    color:var(--muted);font-size:12px;font-family:var(--ff-b);font-weight:600;
+    cursor:pointer;transition:all .2s;padding:0 6px;
+    text-decoration:none;
+}
+.pg-btn:hover:not(:disabled):not(.disabled){background:var(--b1);border-color:var(--b2);color:var(--txt2);}
+.pg-btn.active{background:linear-gradient(135deg,var(--p4),var(--p5));border-color:transparent;color:#fff;box-shadow:0 2px 8px rgba(107,70,193,.3);}
+.pg-btn:disabled,.pg-btn.disabled{opacity:.35;cursor:not-allowed;}
+.pg-ellipsis{padding:0 4px;color:var(--muted);font-size:13px;}
+.per-page-select{
+    padding:6px 10px;background:rgba(255,255,255,.9);border:1.5px solid var(--b2);
+    border-radius:var(--r-md);color:var(--txt);font-size:12px;font-family:var(--ff-b);
+    outline:none;cursor:pointer;transition:all .25s;
+}
+.per-page-select:focus{border-color:var(--p5);}
+.per-page-wrapper{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);}
+
+/* ===== BADGES ===== */
 .badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:var(--r-full);font-size:11px;font-weight:600;}
 .badge-good{background:rgba(5,150,105,.1);color:var(--emerald);border:1px solid rgba(5,150,105,.2);}
 .badge-rusak{background:rgba(220,38,38,.1);color:var(--rose);border:1px solid rgba(220,38,38,.2);}
@@ -119,6 +203,8 @@ body::after{
 .empty-state p{font-size:13px;color:var(--muted);font-weight:300;}
 .fab{position:fixed;bottom:32px;right:32px;width:52px;height:52px;border-radius:var(--r-full);background:linear-gradient(135deg,var(--p4),var(--p5));color:#fff;border:none;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 28px rgba(107,70,193,.45);transition:all .35s cubic-bezier(.34,1.56,.64,1);z-index:100;}
 .fab:hover{transform:translateY(-4px) rotate(90deg) scale(1.08);box-shadow:0 14px 40px rgba(107,70,193,.6);}
+
+/* ===== MODAL ===== */
 .modal-overlay{position:fixed;inset:0;background:rgba(45,31,94,.5);backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;z-index:2000;padding:20px;}
 .modal-content{background:linear-gradient(160deg,#FDFBFF 0%,#F5F0FF 60%,#FDFBFF 100%);border:1px solid var(--b2);border-radius:var(--r-xl);padding:0;max-width:880px;width:100%;box-shadow:var(--sh-xl);position:relative;overflow:hidden;max-height:90vh;overflow-y:auto;animation:modalIn .4s cubic-bezier(.22,1,.36,1) both;}
 @keyframes modalIn{from{opacity:0;transform:translateY(24px) scale(.95);}to{opacity:1;transform:translateY(0) scale(1);}}
@@ -145,11 +231,41 @@ select.form-input option{background:#F5F0FF;color:var(--txt);}
 .section-label{grid-column:1/-1;font-size:10px;font-weight:700;color:var(--p5);text-transform:uppercase;letter-spacing:.1em;margin-bottom:-4px;}
 .form-footer{display:flex;justify-content:flex-end;gap:10px;padding:20px 28px;border-top:1px solid var(--b1);margin-top:22px;position:sticky;bottom:0;background:rgba(253,251,255,.95);backdrop-filter:blur(8px);z-index:5;}
 code.kode{color:var(--p5);font-size:12px;background:rgba(107,70,193,.08);padding:2px 7px;border-radius:5px;font-family:'Courier New',monospace;}
+
+/* ===== RESULTS INFO BAR ===== */
+.results-info-bar{
+    position:relative;z-index:1;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:8px 14px;margin-bottom:8px;
+    background:rgba(107,70,193,.04);border:1px solid var(--b1);border-radius:var(--r-md);
+    font-size:12px;color:var(--muted);flex-wrap:wrap;gap:6px;
+}
+.results-info-bar strong{color:var(--txt2);}
+.filter-tags{display:flex;gap:6px;flex-wrap:wrap;}
+.filter-tag{
+    display:inline-flex;align-items:center;gap:4px;
+    background:rgba(107,70,193,.1);border:1px solid var(--b2);
+    color:var(--p5);font-size:10px;font-weight:600;
+    padding:2px 8px;border-radius:var(--r-full);
+}
+.filter-tag-remove{cursor:pointer;opacity:.7;font-size:9px;transition:opacity .2s;}
+.filter-tag-remove:hover{opacity:1;}
+
+/* ===== TABLE WRAPPER bottom margin for FAB ===== */
+.table-wrapper-outer{margin-bottom:80px;}
+
 @media(max-width:768px){
     .form-grid{grid-template-columns:1fr;}
     .form-grid .span-2,.form-grid .span-3{grid-column:1;}
     .page-header{flex-direction:column;text-align:center;}
     .section-header{flex-direction:column;align-items:flex-start;gap:10px;}
+    .filter-grid{grid-template-columns:1fr 1fr;}
+    .table-footer{flex-direction:column;align-items:flex-start;}
+    .per-page-wrapper{order:-1;}
+}
+@media(max-width:480px){
+    .filter-grid{grid-template-columns:1fr;}
+    .search-filter-row{flex-direction:column;}
 }
 </style>
 @endsection
@@ -202,74 +318,277 @@ code.kode{color:var(--p5);font-size:12px;background:rgba(107,70,193,.08);padding
     </div>
 </div>
 
-<div class="search-bar">
-    <i class="fas fa-search search-icon"></i>
-    <input type="text" class="search-input" id="searchInput" placeholder="Cari uraian, kode klasifikasi, jenis arsip...">
+{{-- ===== FILTER PANEL ===== --}}
+<div class="filter-panel" id="filterPanel">
+    <button class="filter-toggle" id="filterToggle">
+        <div class="filter-toggle-left">
+            <i class="fas fa-sliders-h" style="color:var(--p5);font-size:14px;"></i>
+            <span class="filter-toggle-label">Filter Data</span>
+            <span class="filter-active-count" id="filterActiveCount">0 aktif</span>
+        </div>
+        <i class="fas fa-chevron-down filter-toggle-icon"></i>
+    </button>
+    <div class="filter-body" id="filterBody">
+
+        {{-- Filter Musnah --}}
+        @if($kategori->name === 'Daftar Arsip Usul Musnah')
+        <div class="filter-grid">
+            <div class="filter-group">
+                <label class="filter-label">Kode Klasifikasi</label>
+                <input type="text" class="filter-input" id="flt_kode_klasifikasi" placeholder="Cari kode...">
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Kurun Waktu</label>
+                <input type="text" class="filter-input" id="flt_kurun_waktu" placeholder="Contoh: 2020">
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Tingkat Perkembangan</label>
+                <select class="filter-input" id="flt_tingkat_perkembangan">
+                    <option value="">-- Semua --</option>
+                    <option value="Asli">Asli</option>
+                    <option value="Fotokopi">Fotokopi</option>
+                    <option value="Salinan">Salinan</option>
+                    <option value="Tembusan">Tembusan</option>
+                    <option value="Disposisi">Disposisi</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Media Simpan</label>
+                <select class="filter-input" id="flt_media_simpan">
+                    <option value="">-- Semua --</option>
+                    <option value="Kertas">Kertas</option>
+                    <option value="Digital">Digital</option>
+                    <option value="Mikrofilm">Mikrofilm</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Kondisi Fisik</label>
+                <select class="filter-input" id="flt_kondisi_fisik">
+                    <option value="">-- Semua --</option>
+                    <option value="Baik">Baik</option>
+                    <option value="Rusak Ringan">Rusak Ringan</option>
+                    <option value="Rusak Berat">Rusak Berat</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Nasib Akhir</label>
+                <select class="filter-input" id="flt_nasib_akhir_arsip">
+                    <option value="">-- Semua --</option>
+                    <option value="Musnah">Musnah</option>
+                    <option value="Permanen">Permanen</option>
+                    <option value="Dinilai Kembali">Dinilai Kembali</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">No. Box</label>
+                <input type="text" class="filter-input" id="flt_no_box" placeholder="Cari box...">
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Jangka Simpan</label>
+                <input type="text" class="filter-input" id="flt_jangka_simpan" placeholder="Contoh: 5 Tahun">
+            </div>
+        </div>
+
+        {{-- Filter Persuratan --}}
+        @elseif($kategori->name === 'Arsip Inaktif Persuratan')
+        <div class="filter-grid">
+            <div class="filter-group">
+                <label class="filter-label">Unit Kerja</label>
+                <input type="text" class="filter-input" id="flt_unit_kerja" placeholder="Cari unit kerja...">
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Kode Klasifikasi</label>
+                <input type="text" class="filter-input" id="flt_kode_klasifikasi_persuratan" placeholder="Cari kode...">
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Tingkat Perkembangan</label>
+                <select class="filter-input" id="flt_tingkat_perkembangan_persuratan">
+                    <option value="">-- Semua --</option>
+                    <option value="Asli">Asli</option>
+                    <option value="Fotokopi">Fotokopi</option>
+                    <option value="Salinan">Salinan</option>
+                    <option value="Tembusan">Tembusan</option>
+                    <option value="Disposisi">Disposisi</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Klasifikasi Keamanan</label>
+                <select class="filter-input" id="flt_klasifikasi_keamanan">
+                    <option value="">-- Semua --</option>
+                    <option value="Terbuka">Terbuka</option>
+                    <option value="Terbatas">Terbatas</option>
+                    <option value="Rahasia">Rahasia</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Tanggal Dari</label>
+                <input type="date" class="filter-input" id="flt_tgl_dari">
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Tanggal Sampai</label>
+                <input type="date" class="filter-input" id="flt_tgl_sampai">
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">No. Filling Cabinet</label>
+                <input type="text" class="filter-input" id="flt_no_filling_cabinet" placeholder="Cari FC...">
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">No. Berkas</label>
+                <input type="text" class="filter-input" id="flt_no_berkas_persuratan" placeholder="Cari no berkas...">
+            </div>
+        </div>
+
+        {{-- Filter Vital & Permanen --}}
+        @else
+        <div class="filter-grid">
+            <div class="filter-group">
+                <label class="filter-label">Jenis Arsip</label>
+                <input type="text" class="filter-input" id="flt_jenis_arsip" placeholder="Contoh: Vital, Permanen">
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Tingkat Perkembangan</label>
+                <select class="filter-input" id="flt_tingkat_perkembangan">
+                    <option value="">-- Semua --</option>
+                    <option value="Asli">Asli</option>
+                    <option value="Fotokopi">Fotokopi</option>
+                    <option value="Salinan">Salinan</option>
+                    <option value="Tembusan">Tembusan</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Pihak I</label>
+                <input type="text" class="filter-input" id="flt_pihak_i" placeholder="Cari pihak I...">
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Pihak II</label>
+                <input type="text" class="filter-input" id="flt_pihak_ii" placeholder="Cari pihak II...">
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Media</label>
+                <input type="text" class="filter-input" id="flt_media" placeholder="Cari media...">
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Lokasi Simpan</label>
+                <input type="text" class="filter-input" id="flt_lokasi_simpan" placeholder="Cari lokasi...">
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Berlaku Dari</label>
+                <input type="date" class="filter-input" id="flt_berlaku_dari">
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Berlaku Sampai</label>
+                <input type="date" class="filter-input" id="flt_berlaku_sampai">
+            </div>
+        </div>
+        @endif
+
+        <div class="filter-separator"></div>
+        <div class="filter-actions">
+            <button class="btn btn-primary btn-filter-apply" id="applyFilterBtn"><i class="fas fa-filter"></i> Terapkan Filter</button>
+            <button class="btn btn-secondary btn-filter-reset" id="resetFilterBtn"><i class="fas fa-times"></i> Reset Filter</button>
+            <span style="font-size:12px;color:var(--muted);margin-left:auto;" id="filterResultInfo"></span>
+        </div>
+    </div>
 </div>
 
-<div class="table-wrapper">
-    <div class="table-scroll">
-        <table class="table">
-            <thead>
-                @if($kategori->name === 'Daftar Arsip Usul Musnah')
-                <tr>
-                    <th class="td-no">#</th>
-                    <th class="td-kode">Kode Klasifikasi</th>
-                    <th class="td-uraian">Uraian Informasi</th>
-                    <th class="td-waktu">Kurun Waktu</th>
-                    <th class="td-tingkat">Tingkat Perkembangan</th>
-                    <th class="td-jumlah">Jumlah</th>
-                    <th class="td-extra">No. Box</th>
-                    <th class="td-extra">Media Simpan</th>
-                    <th class="td-extra">Kondisi Fisik</th>
-                    <th class="td-extra">No. Folder</th>
-                    <th class="td-extra">Jangka Simpan</th>
-                    <th class="td-extra">Nasib Akhir</th>
-                    <th class="td-extra">Lbr</th>
-                    <th class="td-ket">Ket</th>
-                    @if($userRole === 'admin')<th class="td-aksi">Aksi</th>@endif
-                </tr>
-                @elseif($kategori->name === 'Arsip Inaktif Persuratan')
-                <tr>
-                    <th class="td-extra">No. Berkas</th>
-                    <th class="td-extra">Unit Kerja</th>
-                    <th class="td-extra">No. Item Arsip</th>
-                    <th class="td-kode">Kode Klasifikasi</th>
-                    <th class="td-uraian">Uraian Informasi Isi Arsip</th>
-                    <th class="td-tanggal">Tgl</th>
-                    <th class="td-tingkat">Tingkat Perkembangan</th>
-                    <th class="td-jumlah">Jumlah (lbr)</th>
-                    <th class="td-extra">No. Filling Cabinet</th>
-                    <th class="td-extra">No. Laci</th>
-                    <th class="td-extra">No. Folder</th>
-                    <th class="td-extra">Klasifikasi Keamanan</th>
-                    <th class="td-ket">Ket</th>
-                    @if($userRole === 'admin')<th class="td-aksi">Aksi</th>@endif
-                </tr>
-                @else
-                <tr>
-                    <th class="td-no">#</th>
-                    <th class="td-jenis">Jenis Arsip</th>
-                    <th class="td-extra">No Box</th>
-                    <th class="td-extra">No Berkas</th>
-                    <th class="td-extra">No. Perjanjian</th>
-                    <th class="td-extra">Pihak I</th>
-                    <th class="td-extra">Pihak II</th>
-                    <th class="td-tingkat">Tingkat Perkembangan</th>
-                    <th class="td-tanggal">Tgl Berlaku</th>
-                    <th class="td-tanggal">Tgl Berakhir</th>
-                    <th class="td-extra">Media</th>
-                    <th class="td-jumlah">Jumlah</th>
-                    <th class="td-extra">Jangka Simpan</th>
-                    <th class="td-extra">Lokasi Simpan</th>
-                    <th class="td-extra">Metode</th>
-                    <th class="td-ket">Ket</th>
-                    @if($userRole === 'admin')<th class="td-aksi">Aksi</th>@endif
-                </tr>
-                @endif
-            </thead>
-            <tbody id="tableBody"></tbody>
-        </table>
+{{-- ===== SEARCH + INFO ===== --}}
+<div class="search-filter-row">
+    <div class="search-bar">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" class="search-input" id="searchInput" placeholder="Cari uraian, kode klasifikasi, jenis arsip...">
+    </div>
+</div>
+
+{{-- Results info bar --}}
+<div class="results-info-bar" id="resultsInfoBar" style="display:none;">
+    <div>
+        Menampilkan <strong id="infoShowing">-</strong> dari <strong id="infoTotal">-</strong> data
+        <span id="infoFilteredFrom" style="display:none;"> (difilter dari <strong id="infoAllTotal">-</strong> total)</span>
+    </div>
+    <div class="filter-tags" id="filterTagsContainer"></div>
+</div>
+
+<div class="table-wrapper-outer">
+    <div class="table-wrapper">
+        <div class="table-scroll">
+            <table class="table">
+                <thead>
+                    @if($kategori->name === 'Daftar Arsip Usul Musnah')
+                    <tr>
+                        <th class="td-no">#</th>
+                        <th class="td-kode">Kode Klasifikasi</th>
+                        <th class="td-uraian">Uraian Informasi</th>
+                        <th class="td-waktu">Kurun Waktu</th>
+                        <th class="td-tingkat">Tingkat Perkembangan</th>
+                        <th class="td-jumlah">Jumlah</th>
+                        <th class="td-extra">No. Box</th>
+                        <th class="td-extra">Media Simpan</th>
+                        <th class="td-extra">Kondisi Fisik</th>
+                        <th class="td-extra">No. Folder</th>
+                        <th class="td-extra">Jangka Simpan</th>
+                        <th class="td-extra">Nasib Akhir</th>
+                        <th class="td-extra">Lbr</th>
+                        <th class="td-ket">Ket</th>
+                        @if($userRole === 'admin')<th class="td-aksi">Aksi</th>@endif
+                    </tr>
+                    @elseif($kategori->name === 'Arsip Inaktif Persuratan')
+                    <tr>
+                        <th class="td-extra">No. Berkas</th>
+                        <th class="td-extra">Unit Kerja</th>
+                        <th class="td-extra">No. Item Arsip</th>
+                        <th class="td-kode">Kode Klasifikasi</th>
+                        <th class="td-uraian">Uraian Informasi Isi Arsip</th>
+                        <th class="td-tanggal">Tgl</th>
+                        <th class="td-tingkat">Tingkat Perkembangan</th>
+                        <th class="td-jumlah">Jumlah (lbr)</th>
+                        <th class="td-extra">No. Filling Cabinet</th>
+                        <th class="td-extra">No. Laci</th>
+                        <th class="td-extra">No. Folder</th>
+                        <th class="td-extra">Klasifikasi Keamanan</th>
+                        <th class="td-ket">Ket</th>
+                        @if($userRole === 'admin')<th class="td-aksi">Aksi</th>@endif
+                    </tr>
+                    @else
+                    <tr>
+                        <th class="td-no">#</th>
+                        <th class="td-jenis">Jenis Arsip</th>
+                        <th class="td-extra">No Box</th>
+                        <th class="td-extra">No Berkas</th>
+                        <th class="td-extra">No. Perjanjian</th>
+                        <th class="td-extra">Pihak I</th>
+                        <th class="td-extra">Pihak II</th>
+                        <th class="td-tingkat">Tingkat Perkembangan</th>
+                        <th class="td-tanggal">Tgl Berlaku</th>
+                        <th class="td-tanggal">Tgl Berakhir</th>
+                        <th class="td-extra">Media</th>
+                        <th class="td-jumlah">Jumlah</th>
+                        <th class="td-extra">Jangka Simpan</th>
+                        <th class="td-extra">Lokasi Simpan</th>
+                        <th class="td-extra">Metode</th>
+                        <th class="td-ket">Ket</th>
+                        @if($userRole === 'admin')<th class="td-aksi">Aksi</th>@endif
+                    </tr>
+                    @endif
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+
+        {{-- Pagination Footer --}}
+        <div class="table-footer" id="tableFooter" style="display:none;">
+            <div class="per-page-wrapper">
+                <span>Tampilkan</span>
+                <select class="per-page-select" id="perPageSelect">
+                    <option value="10" selected>10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+                <span>per halaman</span>
+            </div>
+            <div class="pagination-info" id="paginationInfo">-</div>
+            <div class="pagination-controls" id="paginationControls"></div>
+        </div>
     </div>
 </div>
 
@@ -294,14 +613,13 @@ code.kode{color:var(--p5);font-size:12px;background:rgba(107,70,193,.08);padding
                 {{-- ========================= TEMPLATE 1: USUL MUSNAH ========================= --}}
                 @if($kategori->name === 'Daftar Arsip Usul Musnah')
                 <div class="form-grid">
-
                     <div class="form-group">
                         <label class="form-label">Kode Klasifikasi</label>
                         <input type="text" class="form-input" id="fKodeKlasifikasi" name="kode_klasifikasi" placeholder="Contoh: 600.1">
                         <div class="invalid-feedback" id="kode_klasifikasiError"></div>
                     </div>
                     <div class="form-group span-2">
-                        <label class="form-label">Uraian Informasi </label>
+                        <label class="form-label">Uraian Informasi</label>
                         <textarea class="form-input" id="fUraian" name="uraian_informasi" placeholder="Deskripsi arsip..."></textarea>
                         <div class="invalid-feedback" id="uraian_informasiError"></div>
                     </div>
@@ -322,7 +640,7 @@ code.kode{color:var(--p5);font-size:12px;background:rgba(107,70,193,.08);padding
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Jumlah </label>
+                        <label class="form-label">Jumlah</label>
                         <input type="text" class="form-input" id="fJumlah" name="jumlah" placeholder="Contoh: 5 Berkas">
                         <div class="invalid-feedback" id="jumlahError"></div>
                     </div>
@@ -353,12 +671,12 @@ code.kode{color:var(--p5);font-size:12px;background:rgba(107,70,193,.08);padding
                         <input type="text" class="form-input" id="fNomorFolder" name="nomor_folder" placeholder="Contoh: F-001">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Jangka Simpan </label>
+                        <label class="form-label">Jangka Simpan</label>
                         <input type="text" class="form-input" id="fJangka" name="jangka_simpan" placeholder="Contoh: 5 Tahun">
                         <div class="invalid-feedback" id="jangka_simpanError"></div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Nasib Akhir Arsip </label>
+                        <label class="form-label">Nasib Akhir Arsip</label>
                         <select class="form-input" id="fNasib" name="nasib_akhir_arsip">
                             <option value="">-- Pilih --</option>
                             <option value="Musnah">Musnah</option>
@@ -377,7 +695,6 @@ code.kode{color:var(--p5);font-size:12px;background:rgba(107,70,193,.08);padding
                     </div>
                 </div>
 
-                {{-- ========================= TEMPLATE 3: ARSIP INAKTIF PERSURATAN ========================= --}}
                 @elseif($kategori->name === 'Arsip Inaktif Persuratan')
                 <div class="form-grid">
                     <div class="form-group">
@@ -398,7 +715,7 @@ code.kode{color:var(--p5);font-size:12px;background:rgba(107,70,193,.08);padding
                         <input type="text" class="form-input" id="fKodeKlasifikasiPersuratan" name="kode_klasifikasi_persuratan" placeholder="Contoh: HKM.02.1">
                     </div>
                     <div class="form-group span-2">
-                        <label class="form-label">Uraian Informasi Isi Arsip </label>
+                        <label class="form-label">Uraian Informasi Isi Arsip</label>
                         <textarea class="form-input" id="fUraianPersuratan" name="uraian_informasi_persuratan" placeholder="Deskripsi surat / arsip..."></textarea>
                         <div class="invalid-feedback" id="uraian_informasi_persurationError"></div>
                     </div>
@@ -421,10 +738,8 @@ code.kode{color:var(--p5);font-size:12px;background:rgba(107,70,193,.08);padding
                         <label class="form-label">Jumlah (lbr)</label>
                         <input type="text" class="form-input" id="fJumlahLembar" name="jumlah_lembar" placeholder="Contoh: 5">
                     </div>
-
                     <hr class="section-divider">
                     <div class="section-label">Lokasi Penyimpanan</div>
-
                     <div class="form-group">
                         <label class="form-label">No. Filling Cabinet</label>
                         <input type="text" class="form-input" id="fNoFillingCabinet" name="no_filling_cabinet" placeholder="Contoh: FC-01">
@@ -452,12 +767,10 @@ code.kode{color:var(--p5);font-size:12px;background:rgba(107,70,193,.08);padding
                     </div>
                 </div>
 
-                {{-- ========================= TEMPLATE 2: VITAL & PERMANEN ========================= --}}
                 @else
                 <div class="form-grid">
-
                     <div class="form-group">
-                        <label class="form-label">Jenis Arsip </label>
+                        <label class="form-label">Jenis Arsip</label>
                         <input type="text" class="form-input" id="fJenisArsip" name="jenis_arsip" placeholder="Contoh: Vital, Permanen">
                         <div class="invalid-feedback" id="jenis_arsipError"></div>
                     </div>
@@ -504,7 +817,7 @@ code.kode{color:var(--p5);font-size:12px;background:rgba(107,70,193,.08);padding
                         <input type="text" class="form-input" id="fMedia" name="media" placeholder="Jenis media">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Jumlah </label>
+                        <label class="form-label">Jumlah</label>
                         <input type="text" class="form-input" id="fJumlah" name="jumlah" placeholder="Contoh: 5 Berkas">
                         <div class="invalid-feedback" id="jumlahError"></div>
                     </div>
@@ -550,33 +863,44 @@ const canEdit      = userRole === 'admin';
 const isMusnah     = kategoriNama === 'Daftar Arsip Usul Musnah';
 const isPersuratan = kategoriNama === 'Arsip Inaktif Persuratan';
 
-let allData   = [];
-let currentId = null;
+let allData      = [];   // raw dari API
+let filteredData = [];   // setelah filter + search
+let currentPage  = 1;
+let perPage      = 10;
+let currentId    = null;
+let activeFilters = {};
 
 const elForm = {
-    tableBody:   document.getElementById('tableBody'),
-    searchInput: document.getElementById('searchInput'),
-    mainModal:   document.getElementById('mainModal'),
-    mainForm:    document.getElementById('mainForm'),
+    tableBody:          document.getElementById('tableBody'),
+    searchInput:        document.getElementById('searchInput'),
+    mainModal:          document.getElementById('mainModal'),
+    mainForm:           document.getElementById('mainForm'),
+    tableFooter:        document.getElementById('tableFooter'),
+    paginationInfo:     document.getElementById('paginationInfo'),
+    paginationControls: document.getElementById('paginationControls'),
+    perPageSelect:      document.getElementById('perPageSelect'),
+    resultsInfoBar:     document.getElementById('resultsInfoBar'),
+    filterTagsContainer:document.getElementById('filterTagsContainer'),
 };
 
+/* =========================================================
+   HELPERS
+   ========================================================= */
 function clearErrors(){
-    [
-        'noError','kode_klasifikasiError','uraian_informasiError','kurun_waktuError',
-        'jumlahError','jangka_simpanError','nasib_akhir_arsipError','jenis_arsipError',
-        'uraian_informasi_persurationError',
-    ].forEach(id=>{const e=document.getElementById(id);if(e){e.style.display='none';e.textContent='';}});
+    ['noError','kode_klasifikasiError','uraian_informasiError','kurun_waktuError',
+     'jumlahError','jangka_simpanError','nasib_akhir_arsipError','jenis_arsipError',
+     'uraian_informasi_persurationError']
+    .forEach(id=>{const e=document.getElementById(id);if(e){e.style.display='none';e.textContent='';}});
 }
 function resetForm(){elForm.mainForm.reset();document.getElementById('itemId').value='';currentId=null;clearErrors();}
 function setField(id,val){const e=document.getElementById(id);if(e)e.value=val??'';}
 
-function getKondisiBadge(kondisi){
-    if(!kondisi)return'-';
-    if(kondisi==='Baik')return`<span class="badge badge-good">${kondisi}</span>`;
-    if(kondisi.includes('Rusak'))return`<span class="badge badge-rusak">${kondisi}</span>`;
-    return`<span class="badge badge-default">${kondisi}</span>`;
+function getKondisiBadge(k){
+    if(!k)return'-';
+    if(k==='Baik')return`<span class="badge badge-good">${k}</span>`;
+    if(k.includes('Rusak'))return`<span class="badge badge-rusak">${k}</span>`;
+    return`<span class="badge badge-default">${k}</span>`;
 }
-
 function getKeamananBadge(k){
     if(!k)return'-';
     if(k==='Terbuka')return`<span class="badge badge-terbuka">${k}</span>`;
@@ -584,42 +908,204 @@ function getKeamananBadge(k){
     if(k==='Rahasia')return`<span class="badge badge-rahasia">${k}</span>`;
     return`<span class="badge badge-default">${k}</span>`;
 }
-
 function fmtDate(val){
     if(!val)return'-';
     return new Date(val).toLocaleDateString('id-ID');
 }
+function includes_ci(str,q){return(str||'').toLowerCase().includes((q||'').toLowerCase());}
 
-async function loadStats(){
-    try{
-        const res=await axios.get(`/api/kategori/${kategoriId}/detail/${detailId}/tahun/${tahunId}/input/stats`);
-        if(res.data.success){
-            document.getElementById('totalInput').textContent=res.data.data.total_input||0;
-            document.getElementById('latestUpdate').textContent=res.data.data.latest_update||'-';
+/* =========================================================
+   FILTER ENGINE
+   ========================================================= */
+function getFilterValues(){
+    const vals = {};
+    document.querySelectorAll('.filter-input').forEach(el=>{
+        if(el.value.trim()) vals[el.id] = el.value.trim();
+    });
+    return vals;
+}
+
+function applyFiltersAndSearch(){
+    const q    = (elForm.searchInput.value||'').toLowerCase();
+    const fv   = activeFilters;
+
+    filteredData = allData.filter(item => {
+        // -------- SEARCH --------
+        let matchSearch = true;
+        if(q){
+            if(isMusnah)
+                matchSearch = includes_ci(item.uraian_informasi,q)||includes_ci(item.kode_klasifikasi,q)||includes_ci(item.kurun_waktu,q);
+            else if(isPersuratan)
+                matchSearch = includes_ci(item.uraian_informasi_persuratan,q)||includes_ci(item.kode_klasifikasi_persuratan,q)||includes_ci(item.unit_kerja,q);
+            else
+                matchSearch = includes_ci(item.jenis_arsip,q)||includes_ci(item.pihak_i,q)||includes_ci(item.pihak_ii,q)||includes_ci(item.no_perjanjian_kerjasama,q);
         }
-    }catch(e){console.log('stats error',e);}
+        if(!matchSearch) return false;
+
+        // -------- FILTER per kategori --------
+        if(isMusnah){
+            if(fv.flt_kode_klasifikasi    && !includes_ci(item.kode_klasifikasi,   fv.flt_kode_klasifikasi))    return false;
+            if(fv.flt_kurun_waktu         && !includes_ci(item.kurun_waktu,        fv.flt_kurun_waktu))         return false;
+            if(fv.flt_tingkat_perkembangan&& item.tingkat_perkembangan !== fv.flt_tingkat_perkembangan)         return false;
+            if(fv.flt_media_simpan        && item.media_simpan          !== fv.flt_media_simpan)                return false;
+            if(fv.flt_kondisi_fisik       && item.kondisi_fisik         !== fv.flt_kondisi_fisik)               return false;
+            if(fv.flt_nasib_akhir_arsip   && item.nasib_akhir_arsip     !== fv.flt_nasib_akhir_arsip)           return false;
+            if(fv.flt_no_box              && !includes_ci(item.no_box,  fv.flt_no_box))                         return false;
+            if(fv.flt_jangka_simpan       && !includes_ci(item.jangka_simpan, fv.flt_jangka_simpan))           return false;
+
+        } else if(isPersuratan){
+            if(fv.flt_unit_kerja                      && !includes_ci(item.unit_kerja,                   fv.flt_unit_kerja))                  return false;
+            if(fv.flt_kode_klasifikasi_persuratan     && !includes_ci(item.kode_klasifikasi_persuratan,  fv.flt_kode_klasifikasi_persuratan)) return false;
+            if(fv.flt_tingkat_perkembangan_persuratan && item.tingkat_perkembangan_persuratan !== fv.flt_tingkat_perkembangan_persuratan)     return false;
+            if(fv.flt_klasifikasi_keamanan            && item.klasifikasi_keamanan            !== fv.flt_klasifikasi_keamanan)                return false;
+            if(fv.flt_no_filling_cabinet              && !includes_ci(item.no_filling_cabinet,            fv.flt_no_filling_cabinet))          return false;
+            if(fv.flt_no_berkas_persuratan            && !includes_ci(item.no_berkas_persuratan,          fv.flt_no_berkas_persuratan))        return false;
+            if(fv.flt_tgl_dari && item.tgl && item.tgl < fv.flt_tgl_dari)   return false;
+            if(fv.flt_tgl_sampai && item.tgl && item.tgl > fv.flt_tgl_sampai) return false;
+
+        } else {
+            if(fv.flt_jenis_arsip         && !includes_ci(item.jenis_arsip,    fv.flt_jenis_arsip))    return false;
+            if(fv.flt_tingkat_perkembangan&& item.tingkat_perkembangan !== fv.flt_tingkat_perkembangan) return false;
+            if(fv.flt_pihak_i             && !includes_ci(item.pihak_i,        fv.flt_pihak_i))        return false;
+            if(fv.flt_pihak_ii            && !includes_ci(item.pihak_ii,       fv.flt_pihak_ii))       return false;
+            if(fv.flt_media               && !includes_ci(item.media,          fv.flt_media))           return false;
+            if(fv.flt_lokasi_simpan       && !includes_ci(item.lokasi_simpan,  fv.flt_lokasi_simpan))   return false;
+            if(fv.flt_berlaku_dari  && item.tanggal_berlaku  && item.tanggal_berlaku  < fv.flt_berlaku_dari)  return false;
+            if(fv.flt_berlaku_sampai&& item.tanggal_berakhir && item.tanggal_berakhir > fv.flt_berlaku_sampai) return false;
+        }
+        return true;
+    });
+
+    currentPage = 1;
+    renderTable();
+    updateResultsInfo();
+    updateFilterTags();
 }
 
-async function loadData(){
-    showLoading();
-    try{
-        const res=await axios.get(`/api/kategori/${kategoriId}/detail/${detailId}/tahun/${tahunId}/input`);
-        if(res.data.success){allData=res.data.data||[];renderTable(allData);}
-        else renderEmpty();
-    }catch(e){showNotification('Gagal memuat data','error');renderEmpty();}
-    finally{hideLoading();}
+/* =========================================================
+   FILTER TAGS
+   ========================================================= */
+const filterLabels = {
+    flt_kode_klasifikasi:'Kode',flt_kurun_waktu:'Kurun Waktu',flt_tingkat_perkembangan:'Tingkat',
+    flt_media_simpan:'Media Simpan',flt_kondisi_fisik:'Kondisi',flt_nasib_akhir_arsip:'Nasib Akhir',
+    flt_no_box:'No Box',flt_jangka_simpan:'Jangka Simpan',
+    flt_unit_kerja:'Unit Kerja',flt_kode_klasifikasi_persuratan:'Kode',
+    flt_tingkat_perkembangan_persuratan:'Tingkat',flt_klasifikasi_keamanan:'Keamanan',
+    flt_no_filling_cabinet:'Filling Cabinet',flt_no_berkas_persuratan:'No Berkas',
+    flt_tgl_dari:'Tgl Dari',flt_tgl_sampai:'Tgl Sampai',
+    flt_jenis_arsip:'Jenis',flt_pihak_i:'Pihak I',flt_pihak_ii:'Pihak II',
+    flt_media:'Media',flt_lokasi_simpan:'Lokasi',flt_berlaku_dari:'Berlaku Dari',flt_berlaku_sampai:'Berlaku Sampai',
+};
+function updateFilterTags(){
+    const fv = activeFilters;
+    const entries = Object.entries(fv);
+    elForm.filterTagsContainer.innerHTML = entries.map(([k,v])=>`
+        <span class="filter-tag">
+            ${filterLabels[k]||k}: ${v}
+            <span class="filter-tag-remove" data-key="${k}" title="Hapus filter"><i class="fas fa-times"></i></span>
+        </span>`).join('');
+    elForm.filterTagsContainer.querySelectorAll('.filter-tag-remove').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+            const key = btn.dataset.key;
+            const el  = document.getElementById(key);
+            if(el) el.value='';
+            delete activeFilters[key];
+            applyFiltersAndSearch();
+        });
+    });
+    // update badge count
+    const count = entries.length;
+    const badge = document.getElementById('filterActiveCount');
+    badge.textContent = count + ' aktif';
+    badge.classList.toggle('show', count>0);
 }
 
-function renderTable(data){
-    if(!data||data.length===0){renderEmpty();return;}
+function updateResultsInfo(){
+    const total    = allData.length;
+    const filtered = filteredData.length;
+    const isFiltered = filtered < total || Object.keys(activeFilters).length>0 || elForm.searchInput.value;
+    elForm.resultsInfoBar.style.display = total>0 ? 'flex' : 'none';
+    document.getElementById('infoTotal').textContent    = filtered;
+    document.getElementById('infoAllTotal').textContent = total;
+    document.getElementById('infoFilteredFrom').style.display = (filtered<total) ? '' : 'none';
+    // showing
+    const start = Math.min((currentPage-1)*perPage+1, filtered);
+    const end   = Math.min(currentPage*perPage, filtered);
+    document.getElementById('infoShowing').textContent = filtered===0 ? '0' : `${start}–${end}`;
+}
+
+/* =========================================================
+   RENDER TABLE + PAGINATION
+   ========================================================= */
+function renderTable(){
+    if(!filteredData||filteredData.length===0){renderEmpty();return;}
+
+    const totalPages = Math.ceil(filteredData.length / perPage);
+    if(currentPage > totalPages) currentPage = totalPages;
+    const start = (currentPage-1)*perPage;
+    const pageData = filteredData.slice(start, start+perPage);
+
     elForm.tableBody.innerHTML='';
-    // Gunakan index forEach agar semua row ter-render termasuk yg no=null
-    data.forEach((item, idx)=>elForm.tableBody.appendChild(createRow(item, idx)));
+    pageData.forEach((item,idx)=>{
+        elForm.tableBody.appendChild(createRow(item, start+idx));
+    });
+
+    // Pagination footer
+    elForm.tableFooter.style.display = filteredData.length>0 ? 'flex' : 'none';
+    renderPaginationInfo(filteredData.length, totalPages);
+    renderPaginationControls(totalPages);
+    updateResultsInfo();
+}
+
+function renderPaginationInfo(total, totalPages){
+    const start = Math.min((currentPage-1)*perPage+1, total);
+    const end   = Math.min(currentPage*perPage, total);
+    elForm.paginationInfo.innerHTML = total===0
+        ? 'Tidak ada data'
+        : `Menampilkan <strong>${start}–${end}</strong> dari <strong>${total}</strong> data (Hal. <strong>${currentPage}</strong>/${totalPages})`;
+}
+
+function renderPaginationControls(totalPages){
+    const ctrl = elForm.paginationControls;
+    ctrl.innerHTML = '';
+    if(totalPages<=1){ctrl.style.display='none';return;}
+    ctrl.style.display='flex';
+
+    const mk = (label,page,cls='',disabled=false)=>{
+        const btn = document.createElement('button');
+        btn.className  = 'pg-btn' + (cls?' '+cls:'');
+        btn.innerHTML  = label;
+        btn.disabled   = disabled;
+        if(!disabled) btn.addEventListener('click',()=>{currentPage=page;renderTable();});
+        return btn;
+    };
+
+    // Prev
+    ctrl.appendChild(mk('<i class="fas fa-chevron-left"></i>', currentPage-1, '', currentPage===1));
+
+    // Page numbers with ellipsis
+    const pages = paginationRange(currentPage, totalPages);
+    pages.forEach(p=>{
+        if(p==='…'){
+            const sp=document.createElement('span');sp.className='pg-ellipsis';sp.textContent='…';ctrl.appendChild(sp);
+        } else {
+            ctrl.appendChild(mk(p, p, p===currentPage?'active':''));
+        }
+    });
+
+    // Next
+    ctrl.appendChild(mk('<i class="fas fa-chevron-right"></i>', currentPage+1, '', currentPage===totalPages));
+}
+
+function paginationRange(current, total){
+    if(total<=7) return Array.from({length:total},(_,i)=>i+1);
+    if(current<=4) return [1,2,3,4,5,'…',total];
+    if(current>=total-3) return [1,'…',total-4,total-3,total-2,total-1,total];
+    return [1,'…',current-1,current,current+1,'…',total];
 }
 
 function createRow(item, idx=0){
     const tr=document.createElement('tr');
-
     if(isMusnah){
         tr.innerHTML=`
             <td class="td-no">${idx+1}</td>
@@ -640,10 +1126,9 @@ function createRow(item, idx=0){
                 <button class="btn-icon edit" title="Edit"><i class="fas fa-edit"></i></button>
                 <button class="btn-icon delete" title="Hapus"><i class="fas fa-trash"></i></button>
             </div></td>`:''}`;
-
     } else if(isPersuratan){
         tr.innerHTML=`
-            <td class="td-extra">${item.no_berkas_persuratan || (idx+1)}</td>
+            <td class="td-extra">${item.no_berkas_persuratan||(idx+1)}</td>
             <td class="td-extra">${item.unit_kerja||'-'}</td>
             <td class="td-extra">${item.nomor_item_arsip||'-'}</td>
             <td class="td-kode"><code class="kode">${item.kode_klasifikasi_persuratan||'-'}</code></td>
@@ -660,7 +1145,6 @@ function createRow(item, idx=0){
                 <button class="btn-icon edit" title="Edit"><i class="fas fa-edit"></i></button>
                 <button class="btn-icon delete" title="Hapus"><i class="fas fa-trash"></i></button>
             </div></td>`:''}`;
-
     } else {
         tr.innerHTML=`
             <td class="td-no">${idx+1}</td>
@@ -684,7 +1168,6 @@ function createRow(item, idx=0){
                 <button class="btn-icon delete" title="Hapus"><i class="fas fa-trash"></i></button>
             </div></td>`:''}`;
     }
-
     if(canEdit){
         tr.querySelector('.edit')?.addEventListener('click',()=>openEdit(item.id));
         tr.querySelector('.delete')?.addEventListener('click',()=>deleteItem(item.id));
@@ -697,30 +1180,50 @@ function renderEmpty(){
     if(isMusnah)      colspan = canEdit ? 15 : 14;
     else if(isPersuratan) colspan = canEdit ? 14 : 13;
     else              colspan = canEdit ? 17 : 16;
-
     elForm.tableBody.innerHTML=`<tr><td colspan="${colspan}">
         <div class="empty-state">
             <i class="fas fa-inbox"></i>
             <h3>Belum Ada Data Arsip</h3>
-            <p>Tambahkan data arsip untuk tahun ini.</p>
+            <p>Tambahkan data arsip atau ubah kriteria filter/pencarian.</p>
         </div>
     </td></tr>`;
+    elForm.tableFooter.style.display='none';
 }
 
-elForm.searchInput?.addEventListener('input',e=>{
-    const q=e.target.value.toLowerCase();
-    renderTable(allData.filter(d=>{
-        if(isMusnah)      return(d.uraian_informasi||'').toLowerCase().includes(q)||(d.kode_klasifikasi||'').toLowerCase().includes(q);
-        if(isPersuratan)  return(d.uraian_informasi_persuratan||'').toLowerCase().includes(q)||(d.kode_klasifikasi_persuratan||'').toLowerCase().includes(q)||(d.unit_kerja||'').toLowerCase().includes(q);
-        return(d.jenis_arsip||'').toLowerCase().includes(q)||(d.pihak_i||'').toLowerCase().includes(q)||(d.pihak_ii||'').toLowerCase().includes(q);
-    }));
-});
+/* =========================================================
+   LOAD DATA & STATS
+   ========================================================= */
+async function loadStats(){
+    try{
+        const res=await axios.get(`/api/kategori/${kategoriId}/detail/${detailId}/tahun/${tahunId}/input/stats`);
+        if(res.data.success){
+            document.getElementById('totalInput').textContent=res.data.data.total_input||0;
+            document.getElementById('latestUpdate').textContent=res.data.data.latest_update||'-';
+        }
+    }catch(e){console.log('stats error',e);}
+}
 
+async function loadData(){
+    showLoading();
+    try{
+        const res=await axios.get(`/api/kategori/${kategoriId}/detail/${detailId}/tahun/${tahunId}/input`);
+        if(res.data.success){
+            allData=res.data.data||[];
+            filteredData=[...allData];
+            currentPage=1;
+            applyFiltersAndSearch();
+        } else renderEmpty();
+    }catch(e){showNotification('Gagal memuat data','error');renderEmpty();}
+    finally{hideLoading();}
+}
+
+/* =========================================================
+   MODAL OPEN / CLOSE
+   ========================================================= */
 function openAdd(){
     resetForm();
     document.getElementById('modalTitle').textContent='Tambah Data Arsip';
     document.getElementById('submitText').textContent='Simpan';
-
     elForm.mainModal.style.display='flex';
 }
 
@@ -730,57 +1233,37 @@ async function openEdit(id){
         const res=await axios.get(`/api/kategori/${kategoriId}/detail/${detailId}/tahun/${tahunId}/input/${id}/edit`);
         if(res.data.success){
             const d=res.data.data;
-            resetForm();
-            currentId=d.id;
+            resetForm();currentId=d.id;
             document.getElementById('modalTitle').textContent='Edit Data Arsip';
             document.getElementById('submitText').textContent='Update';
             document.getElementById('itemId').value=d.id;
 
             if(isMusnah){
-                    setField('fKodeKlasifikasi',d.kode_klasifikasi);
-                setField('fUraian',d.uraian_informasi);
-                setField('fKurun',d.kurun_waktu);
-                setField('fTingkat',d.tingkat_perkembangan);
-                setField('fJumlah',d.jumlah);
-                setField('fNoBox',d.no_box);
-                setField('fMediaSimpan',d.media_simpan);
-                setField('fKondisi',d.kondisi_fisik);
-                setField('fNomorFolder',d.nomor_folder);
-                setField('fJangka',d.jangka_simpan);
-                setField('fNasib',d.nasib_akhir_arsip);
-                setField('fLembar',d.lembar);
+                setField('fKodeKlasifikasi',d.kode_klasifikasi);setField('fUraian',d.uraian_informasi);
+                setField('fKurun',d.kurun_waktu);setField('fTingkat',d.tingkat_perkembangan);
+                setField('fJumlah',d.jumlah);setField('fNoBox',d.no_box);
+                setField('fMediaSimpan',d.media_simpan);setField('fKondisi',d.kondisi_fisik);
+                setField('fNomorFolder',d.nomor_folder);setField('fJangka',d.jangka_simpan);
+                setField('fNasib',d.nasib_akhir_arsip);setField('fLembar',d.lembar);
                 setField('fKet',d.keterangan);
-
             } else if(isPersuratan){
-                setField('fNoBerkasPersuratan',d.no_berkas_persuratan);
-                setField('fUnitKerja',d.unit_kerja);
-                setField('fNomorItem',d.nomor_item_arsip);
-                setField('fKodeKlasifikasiPersuratan',d.kode_klasifikasi_persuratan);
+                setField('fNoBerkasPersuratan',d.no_berkas_persuratan);setField('fUnitKerja',d.unit_kerja);
+                setField('fNomorItem',d.nomor_item_arsip);setField('fKodeKlasifikasiPersuratan',d.kode_klasifikasi_persuratan);
                 setField('fUraianPersuratan',d.uraian_informasi_persuratan);
-                setField('fTgl', d.tgl ? d.tgl.substring(0,10) : '');
-                setField('fTingkatPersuratan',d.tingkat_perkembangan_persuratan);
-                setField('fJumlahLembar',d.jumlah_lembar);
-                setField('fNoFillingCabinet',d.no_filling_cabinet);
-                setField('fNoLaci',d.no_laci);
-                setField('fNoFolderPersuratan',d.no_folder_persuratan);
-                setField('fKlasifikasiKeamanan',d.klasifikasi_keamanan);
+                setField('fTgl',d.tgl?d.tgl.substring(0,10):'');
+                setField('fTingkatPersuratan',d.tingkat_perkembangan_persuratan);setField('fJumlahLembar',d.jumlah_lembar);
+                setField('fNoFillingCabinet',d.no_filling_cabinet);setField('fNoLaci',d.no_laci);
+                setField('fNoFolderPersuratan',d.no_folder_persuratan);setField('fKlasifikasiKeamanan',d.klasifikasi_keamanan);
                 setField('fKetPersuratan',d.keterangan_persuratan);
-
             } else {
-                setField('fJenisArsip',d.jenis_arsip);
-                setField('fNoBox',d.no_box);
-                setField('fNoBerkas',d.no_berkas);
-                setField('fNoPerjanjian',d.no_perjanjian_kerjasama);
-                setField('fPihakI',d.pihak_i);
-                setField('fPihakII',d.pihak_ii);
+                setField('fJenisArsip',d.jenis_arsip);setField('fNoBox',d.no_box);
+                setField('fNoBerkas',d.no_berkas);setField('fNoPerjanjian',d.no_perjanjian_kerjasama);
+                setField('fPihakI',d.pihak_i);setField('fPihakII',d.pihak_ii);
                 setField('fTingkat',d.tingkat_perkembangan);
-                setField('fTanggalBerlaku', d.tanggal_berlaku ? d.tanggal_berlaku.substring(0,10) : '');
-                setField('fTanggalBerakhir', d.tanggal_berakhir ? d.tanggal_berakhir.substring(0,10) : '');
-                setField('fMedia',d.media);
-                setField('fJumlah',d.jumlah);
-                setField('fJangka',d.jangka_simpan);
-                setField('fLokasi',d.lokasi_simpan);
-                setField('fMetode',d.metode_perlindungan);
+                setField('fTanggalBerlaku',d.tanggal_berlaku?d.tanggal_berlaku.substring(0,10):'');
+                setField('fTanggalBerakhir',d.tanggal_berakhir?d.tanggal_berakhir.substring(0,10):'');
+                setField('fMedia',d.media);setField('fJumlah',d.jumlah);setField('fJangka',d.jangka_simpan);
+                setField('fLokasi',d.lokasi_simpan);setField('fMetode',d.metode_perlindungan);
                 setField('fKet',d.keterangan);
             }
             elForm.mainModal.style.display='flex';
@@ -791,12 +1274,11 @@ async function openEdit(id){
 
 function closeModal(){elForm.mainModal.style.display='none';resetForm();}
 
+/* =========================================================
+   FORM SUBMIT
+   ========================================================= */
 elForm.mainForm?.addEventListener('submit',async e=>{
-    e.preventDefault();
-    clearErrors();
-
-    // Semua field tidak wajib diisi
-
+    e.preventDefault();clearErrors();
     const formData=new FormData(elForm.mainForm);
     if(currentId)formData.append('_method','PUT');
     const url=currentId
@@ -823,6 +1305,9 @@ elForm.mainForm?.addEventListener('submit',async e=>{
     }finally{hideLoading();}
 });
 
+/* =========================================================
+   DELETE
+   ========================================================= */
 async function deleteItem(id){
     if(!confirm('Yakin ingin menghapus data arsip ini?'))return;
     showLoading();
@@ -833,6 +1318,55 @@ async function deleteItem(id){
     finally{hideLoading();}
 }
 
+/* =========================================================
+   EVENT LISTENERS
+   ========================================================= */
+// Filter toggle
+document.getElementById('filterToggle').addEventListener('click',()=>{
+    document.getElementById('filterPanel').classList.toggle('open');
+});
+
+// Apply filter
+document.getElementById('applyFilterBtn').addEventListener('click',()=>{
+    activeFilters = getFilterValues();
+    applyFiltersAndSearch();
+    // Auto close panel after apply on mobile
+    if(window.innerWidth<768) document.getElementById('filterPanel').classList.remove('open');
+});
+
+// Reset filter
+document.getElementById('resetFilterBtn').addEventListener('click',()=>{
+    document.querySelectorAll('.filter-input').forEach(el=>el.value='');
+    activeFilters = {};
+    elForm.searchInput.value='';
+    applyFiltersAndSearch();
+});
+
+// Search (live)
+let searchTimeout;
+elForm.searchInput?.addEventListener('input',()=>{
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(applyFiltersAndSearch, 250);
+});
+
+// Allow Enter to apply filter in filter inputs
+document.querySelectorAll('.filter-input').forEach(el=>{
+    el.addEventListener('keydown',e=>{
+        if(e.key==='Enter'){
+            activeFilters = getFilterValues();
+            applyFiltersAndSearch();
+        }
+    });
+});
+
+// Per page
+elForm.perPageSelect?.addEventListener('change',e=>{
+    perPage = parseInt(e.target.value);
+    currentPage = 1;
+    renderTable();
+});
+
+// Modal / FAB
 if(canEdit){
     document.getElementById('addBtn')?.addEventListener('click',openAdd);
     document.getElementById('fabBtn')?.addEventListener('click',openAdd);
