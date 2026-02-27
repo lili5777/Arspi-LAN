@@ -540,7 +540,7 @@
                 </div>
 
                 <h1 class="hero-title">
-                    Sistem  Management <span>Pengarsipan</span> Digital
+                    Sistem  Informasi <span>Pemberkasan</span> Arsip
                 </h1>
                 <p class="hero-desc">
                     Platform terintegrasi untuk penyimpanan, pengelolaan, dan akses dokumen digital lembaga secara aman dan efisien.
@@ -570,7 +570,7 @@
         <!-- Right: Form -->
         <div class="form-panel">
             <div class="form-header">
-                <div class="form-eyebrow">SIMPADI</div>
+                <div class="form-eyebrow">SIP Arsip</div>
                 <h2 class="form-title">Selamat Datang</h2>
                 {{-- <p class="form-subtitle">Gunakan kredensial institusi Anda</p> --}}
             </div>

@@ -1,7 +1,7 @@
 @extends('admin.partials.layout')
 
 @section('title', 'Kategori')
-@section('page-title', 'SIMPADI')
+@section('page-title', 'SIP Arsip')
 @section('page-subtitle', 'Manajemen Kategori Arsip • Dashboard Admin')
 
 @section('styles')
