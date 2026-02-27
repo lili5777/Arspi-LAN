@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ArsipExportController;
+use App\Http\Controllers\ArsipImportController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BerkasController;
 use App\Http\Controllers\KategoriController;
@@ -111,6 +112,22 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{input}', [ArsipInputController::class, 'destroy'])->name('destroy');
     });
 
+    // Route Export & Import Excel
+    Route::get(
+        '/kategori/{kategori}/detail/{detail}/tahun/{tahun}/export',
+        [ArsipExportController::class, 'export']
+    )->name('kategori.detail.tahun.input.export');
+
+    Route::post(
+        '/api/kategori/{kategori}/detail/{detail}/tahun/{tahun}/import',
+        [ArsipImportController::class, 'import']
+    )->name('kategori.detail.tahun.input.import');
+
+    Route::get(
+        '/kategori/{kategori}/detail/{detail}/tahun/{tahun}/template',
+        [ArsipExportController::class, 'downloadTemplate']
+    )->name('kategori.detail.tahun.input.template');
+
     // Route Role
     Route::middleware('permission:role.create')->group(function () {
         Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
@@ -121,7 +138,6 @@ Route::middleware('auth')->group(function () {
         Route::put('/roles/{role}', [RoleController::class, 'update'])->name('roles.update');
     });
 
-    
     // Route User
     Route::middleware('permission:user.create')->group(function () {
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
@@ -129,11 +145,6 @@ Route::middleware('auth')->group(function () {
         Route::post('/users', [UserController::class, 'store'])->name('users.store');
         Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
         Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
-        Route::delete('/users/{id}', [UserController::class, 'delete'])->name('users.delete')->middleware('permission:user.read'); 
+        Route::delete('/users/{id}', [UserController::class, 'delete'])->name('users.delete')->middleware('permission:user.read');
     });
-
-    Route::get(
-        '/kategori/{kategori}/detail/{detail}/tahun/{tahun}/export',
-        [ArsipExportController::class, 'export']
-    )->name('kategori.detail.tahun.input.export');
 });

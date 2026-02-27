@@ -204,6 +204,26 @@ select.filter-input option{background:#F5F0FF;color:var(--txt);}
 .fab{position:fixed;bottom:32px;right:32px;width:52px;height:52px;border-radius:var(--r-full);background:linear-gradient(135deg,var(--p4),var(--p5));color:#fff;border:none;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 28px rgba(107,70,193,.45);transition:all .35s cubic-bezier(.34,1.56,.64,1);z-index:100;}
 .fab:hover{transform:translateY(-4px) rotate(90deg) scale(1.08);box-shadow:0 14px 40px rgba(107,70,193,.6);}
 
+/* ===== RESULTS INFO BAR ===== */
+.results-info-bar{
+    position:relative;z-index:1;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:8px 14px;margin-bottom:8px;
+    background:rgba(107,70,193,.04);border:1px solid var(--b1);border-radius:var(--r-md);
+    font-size:12px;color:var(--muted);flex-wrap:wrap;gap:6px;
+}
+.results-info-bar strong{color:var(--txt2);}
+.filter-tags{display:flex;gap:6px;flex-wrap:wrap;}
+.filter-tag{
+    display:inline-flex;align-items:center;gap:4px;
+    background:rgba(107,70,193,.1);border:1px solid var(--b2);
+    color:var(--p5);font-size:10px;font-weight:600;
+    padding:2px 8px;border-radius:var(--r-full);
+}
+.filter-tag-remove{cursor:pointer;opacity:.7;font-size:9px;transition:opacity .2s;}
+.filter-tag-remove:hover{opacity:1;}
+.table-wrapper-outer{margin-bottom:80px;}
+
 /* ===== MODAL ===== */
 .modal-overlay{position:fixed;inset:0;background:rgba(45,31,94,.5);backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;z-index:2000;padding:20px;}
 .modal-content{background:linear-gradient(160deg,#FDFBFF 0%,#F5F0FF 60%,#FDFBFF 100%);border:1px solid var(--b2);border-radius:var(--r-xl);padding:0;max-width:880px;width:100%;box-shadow:var(--sh-xl);position:relative;overflow:hidden;max-height:90vh;overflow-y:auto;animation:modalIn .4s cubic-bezier(.22,1,.36,1) both;}
@@ -232,28 +252,7 @@ select.form-input option{background:#F5F0FF;color:var(--txt);}
 .form-footer{display:flex;justify-content:flex-end;gap:10px;padding:20px 28px;border-top:1px solid var(--b1);margin-top:22px;position:sticky;bottom:0;background:rgba(253,251,255,.95);backdrop-filter:blur(8px);z-index:5;}
 code.kode{color:var(--p5);font-size:12px;background:rgba(107,70,193,.08);padding:2px 7px;border-radius:5px;font-family:'Courier New',monospace;}
 
-/* ===== RESULTS INFO BAR ===== */
-.results-info-bar{
-    position:relative;z-index:1;
-    display:flex;align-items:center;justify-content:space-between;
-    padding:8px 14px;margin-bottom:8px;
-    background:rgba(107,70,193,.04);border:1px solid var(--b1);border-radius:var(--r-md);
-    font-size:12px;color:var(--muted);flex-wrap:wrap;gap:6px;
-}
-.results-info-bar strong{color:var(--txt2);}
-.filter-tags{display:flex;gap:6px;flex-wrap:wrap;}
-.filter-tag{
-    display:inline-flex;align-items:center;gap:4px;
-    background:rgba(107,70,193,.1);border:1px solid var(--b2);
-    color:var(--p5);font-size:10px;font-weight:600;
-    padding:2px 8px;border-radius:var(--r-full);
-}
-.filter-tag-remove{cursor:pointer;opacity:.7;font-size:9px;transition:opacity .2s;}
-.filter-tag-remove:hover{opacity:1;}
-
-/* ===== TABLE WRAPPER bottom margin for FAB ===== */
-.table-wrapper-outer{margin-bottom:80px;}
-
+@keyframes slideInRight{from{opacity:0;transform:translateX(40px);}to{opacity:1;transform:translateX(0);}}
 @media(max-width:768px){
     .form-grid{grid-template-columns:1fr;}
     .form-grid .span-2,.form-grid .span-3{grid-column:1;}
@@ -313,6 +312,9 @@ code.kode{color:var(--p5);font-size:12px;background:rgba(107,70,193,.08);padding
             <i class="fas fa-file-excel"></i> Export Excel
         </a>
         @if($userRole === 'admin')
+        <button class="btn btn-secondary" id="importBtn" style="border-color:rgba(5,150,105,.3);color:#059669;">
+            <i class="fas fa-file-import"></i> Import Excel
+        </button>
         <button class="btn btn-primary" id="addBtn"><i class="fas fa-plus"></i> Tambah Data</button>
         @endif
     </div>
@@ -330,7 +332,6 @@ code.kode{color:var(--p5);font-size:12px;background:rgba(107,70,193,.08);padding
     </button>
     <div class="filter-body" id="filterBody">
 
-        {{-- Filter Musnah --}}
         @if($kategori->name === 'Daftar Arsip Usul Musnah')
         <div class="filter-grid">
             <div class="filter-group">
@@ -389,7 +390,6 @@ code.kode{color:var(--p5);font-size:12px;background:rgba(107,70,193,.08);padding
             </div>
         </div>
 
-        {{-- Filter Persuratan --}}
         @elseif($kategori->name === 'Arsip Inaktif Persuratan')
         <div class="filter-grid">
             <div class="filter-group">
@@ -438,7 +438,6 @@ code.kode{color:var(--p5);font-size:12px;background:rgba(107,70,193,.08);padding
             </div>
         </div>
 
-        {{-- Filter Vital & Permanen --}}
         @else
         <div class="filter-grid">
             <div class="filter-group">
@@ -499,7 +498,6 @@ code.kode{color:var(--p5);font-size:12px;background:rgba(107,70,193,.08);padding
     </div>
 </div>
 
-{{-- Results info bar --}}
 <div class="results-info-bar" id="resultsInfoBar" style="display:none;">
     <div>
         Menampilkan <strong id="infoShowing">-</strong> dari <strong id="infoTotal">-</strong> data
@@ -574,7 +572,6 @@ code.kode{color:var(--p5);font-size:12px;background:rgba(107,70,193,.08);padding
             </table>
         </div>
 
-        {{-- Pagination Footer --}}
         <div class="table-footer" id="tableFooter" style="display:none;">
             <div class="per-page-wrapper">
                 <span>Tampilkan</span>
@@ -596,6 +593,7 @@ code.kode{color:var(--p5);font-size:12px;background:rgba(107,70,193,.08);padding
 <button class="fab" id="fabBtn"><i class="fas fa-plus"></i></button>
 @endif
 
+{{-- ===== MODAL TAMBAH/EDIT ===== --}}
 <div class="modal-overlay" id="mainModal">
     <div class="modal-content">
         <div class="modal-header">
@@ -610,7 +608,6 @@ code.kode{color:var(--p5);font-size:12px;background:rgba(107,70,193,.08);padding
                 @csrf
                 <input type="hidden" id="itemId">
 
-                {{-- ========================= TEMPLATE 1: USUL MUSNAH ========================= --}}
                 @if($kategori->name === 'Daftar Arsip Usul Musnah')
                 <div class="form-grid">
                     <div class="form-group">
@@ -850,6 +847,75 @@ code.kode{color:var(--p5);font-size:12px;background:rgba(107,70,193,.08);padding
         </div>
     </div>
 </div>
+
+{{-- ===== MODAL IMPORT ===== --}}
+<div class="modal-overlay" id="importModal">
+    <div class="modal-content" style="max-width:480px;">
+        <div class="modal-header">
+            <div>
+                <div class="modal-eyebrow">Upload File</div>
+                <h3>Import Data dari Excel</h3>
+            </div>
+            <button class="btn-close" id="closeImportBtn"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" style="padding-bottom:0;">
+            <div style="background:rgba(107,70,193,.05);border:1.5px dashed rgba(107,70,193,.25);border-radius:14px;padding:20px;margin-bottom:20px;">
+                <div style="text-align:center;margin-bottom:14px;">
+                    <i class="fas fa-file-excel" style="font-size:36px;color:#059669;opacity:.8;"></i>
+                    <p style="font-size:12px;color:var(--muted);margin-top:8px;font-weight:500;">Format yang diterima: <strong>.xlsx</strong> atau <strong>.xls</strong></p>
+                </div>
+                <div style="background:rgba(255,255,255,.7);border-radius:10px;padding:12px 14px;margin-bottom:14px;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+                        <div style="font-size:12px;color:var(--txt2);line-height:1.6;flex:1;">
+                            <i class="fas fa-info-circle" style="color:var(--p5);margin-right:6px;"></i>
+                            Pastikan format file sesuai template. Baris header &amp; nomor urut dilewati otomatis.
+                            <br><i class="fas fa-copy" style="color:var(--amber);margin-right:4px;"></i>
+                            <span style="color:var(--amber);font-weight:600;">Data duplikat (uraian sudah ada) akan dilewati otomatis.</span>
+                        </div>
+                        <a href="{{ route('kategori.detail.tahun.input.template', [$kategori->id, $kategoriDetail->id, $tahunDetail->id]) }}"
+                           style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:linear-gradient(135deg,#059669,#10B981);color:#fff;border-radius:10px;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;box-shadow:0 3px 10px rgba(5,150,105,.3);transition:all .2s;"
+                           onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 5px 16px rgba(5,150,105,.4)'"
+                           onmouseout="this.style.transform='';this.style.boxShadow='0 3px 10px rgba(5,150,105,.3)'">
+                            <i class="fas fa-download"></i> Download Template
+                        </a>
+                    </div>
+                </div>
+                <div id="dropZone" style="border:1.5px dashed rgba(107,70,193,.3);border-radius:10px;padding:18px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(255,255,255,.6);"
+                    ondragover="event.preventDefault();this.style.borderColor='var(--p5)';this.style.background='rgba(107,70,193,.06)'"
+                    ondragleave="this.style.borderColor='rgba(107,70,193,.3)';this.style.background='rgba(255,255,255,.6)'"
+                    ondrop="handleDrop(event)"
+                    onclick="document.getElementById('importFile').click()">
+                    <i class="fas fa-cloud-upload-alt" style="font-size:22px;color:var(--p5);margin-bottom:8px;display:block;"></i>
+                    <p style="font-size:12px;color:var(--muted);margin:0;" id="dropText">Klik atau drag & drop file Excel di sini</p>
+                </div>
+                <input type="file" id="importFile" accept=".xlsx,.xls" style="display:none;" onchange="handleFileSelect(this)">
+            </div>
+            <div id="filePreview" style="display:none;background:rgba(5,150,105,.06);border:1px solid rgba(5,150,105,.2);border-radius:10px;padding:12px 14px;margin-bottom:16px;align-items:center;gap:10px;">
+                <i class="fas fa-file-excel" style="color:#059669;font-size:20px;flex-shrink:0;"></i>
+                <div style="flex:1;min-width:0;">
+                    <div id="fileName" style="font-size:13px;font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+                    <div id="fileSize" style="font-size:11px;color:var(--muted);"></div>
+                </div>
+                <button onclick="clearImportFile()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:4px;flex-shrink:0;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="importProgress" style="display:none;margin-bottom:16px;">
+                <div style="height:6px;background:rgba(107,70,193,.1);border-radius:99px;overflow:hidden;">
+                    <div id="progressBar" style="height:100%;background:linear-gradient(90deg,var(--p5),var(--p6));border-radius:99px;width:0%;transition:width .3s;"></div>
+                </div>
+                <p style="font-size:11px;color:var(--muted);margin-top:6px;text-align:center;" id="progressText">Mengupload...</p>
+            </div>
+        </div>
+        <div class="form-footer">
+            <button type="button" class="btn btn-secondary" id="cancelImportBtn">Batal</button>
+            <button type="button" class="btn btn-success" id="doImportBtn" disabled style="opacity:.5;cursor:not-allowed;">
+                <i class="fas fa-file-import"></i> Import Sekarang
+            </button>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @section('scripts')
@@ -863,24 +929,24 @@ const canEdit      = userRole === 'admin';
 const isMusnah     = kategoriNama === 'Daftar Arsip Usul Musnah';
 const isPersuratan = kategoriNama === 'Arsip Inaktif Persuratan';
 
-let allData      = [];   // raw dari API
-let filteredData = [];   // setelah filter + search
-let currentPage  = 1;
-let perPage      = 10;
-let currentId    = null;
+let allData       = [];
+let filteredData  = [];
+let currentPage   = 1;
+let perPage       = 10;
+let currentId     = null;
 let activeFilters = {};
 
 const elForm = {
-    tableBody:          document.getElementById('tableBody'),
-    searchInput:        document.getElementById('searchInput'),
-    mainModal:          document.getElementById('mainModal'),
-    mainForm:           document.getElementById('mainForm'),
-    tableFooter:        document.getElementById('tableFooter'),
-    paginationInfo:     document.getElementById('paginationInfo'),
-    paginationControls: document.getElementById('paginationControls'),
-    perPageSelect:      document.getElementById('perPageSelect'),
-    resultsInfoBar:     document.getElementById('resultsInfoBar'),
-    filterTagsContainer:document.getElementById('filterTagsContainer'),
+    tableBody:           document.getElementById('tableBody'),
+    searchInput:         document.getElementById('searchInput'),
+    mainModal:           document.getElementById('mainModal'),
+    mainForm:            document.getElementById('mainForm'),
+    tableFooter:         document.getElementById('tableFooter'),
+    paginationInfo:      document.getElementById('paginationInfo'),
+    paginationControls:  document.getElementById('paginationControls'),
+    perPageSelect:       document.getElementById('perPageSelect'),
+    resultsInfoBar:      document.getElementById('resultsInfoBar'),
+    filterTagsContainer: document.getElementById('filterTagsContainer'),
 };
 
 /* =========================================================
@@ -894,6 +960,7 @@ function clearErrors(){
 }
 function resetForm(){elForm.mainForm.reset();document.getElementById('itemId').value='';currentId=null;clearErrors();}
 function setField(id,val){const e=document.getElementById(id);if(e)e.value=val??'';}
+function includes_ci(str,q){return(str||'').toLowerCase().includes((q||'').toLowerCase());}
 
 function getKondisiBadge(k){
     if(!k)return'-';
@@ -912,7 +979,6 @@ function fmtDate(val){
     if(!val)return'-';
     return new Date(val).toLocaleDateString('id-ID');
 }
-function includes_ci(str,q){return(str||'').toLowerCase().includes((q||'').toLowerCase());}
 
 /* =========================================================
    FILTER ENGINE
@@ -926,52 +992,46 @@ function getFilterValues(){
 }
 
 function applyFiltersAndSearch(){
-    const q    = (elForm.searchInput.value||'').toLowerCase();
-    const fv   = activeFilters;
+    const q  = (elForm.searchInput.value||'').toLowerCase();
+    const fv = activeFilters;
 
     filteredData = allData.filter(item => {
-        // -------- SEARCH --------
-        let matchSearch = true;
+        // search
         if(q){
-            if(isMusnah)
-                matchSearch = includes_ci(item.uraian_informasi,q)||includes_ci(item.kode_klasifikasi,q)||includes_ci(item.kurun_waktu,q);
-            else if(isPersuratan)
-                matchSearch = includes_ci(item.uraian_informasi_persuratan,q)||includes_ci(item.kode_klasifikasi_persuratan,q)||includes_ci(item.unit_kerja,q);
-            else
-                matchSearch = includes_ci(item.jenis_arsip,q)||includes_ci(item.pihak_i,q)||includes_ci(item.pihak_ii,q)||includes_ci(item.no_perjanjian_kerjasama,q);
+            let match = false;
+            if(isMusnah)      match = includes_ci(item.uraian_informasi,q)||includes_ci(item.kode_klasifikasi,q)||includes_ci(item.kurun_waktu,q);
+            else if(isPersuratan) match = includes_ci(item.uraian_informasi_persuratan,q)||includes_ci(item.kode_klasifikasi_persuratan,q)||includes_ci(item.unit_kerja,q);
+            else              match = includes_ci(item.jenis_arsip,q)||includes_ci(item.pihak_i,q)||includes_ci(item.pihak_ii,q)||includes_ci(item.no_perjanjian_kerjasama,q);
+            if(!match) return false;
         }
-        if(!matchSearch) return false;
-
-        // -------- FILTER per kategori --------
+        // filters
         if(isMusnah){
-            if(fv.flt_kode_klasifikasi    && !includes_ci(item.kode_klasifikasi,   fv.flt_kode_klasifikasi))    return false;
-            if(fv.flt_kurun_waktu         && !includes_ci(item.kurun_waktu,        fv.flt_kurun_waktu))         return false;
-            if(fv.flt_tingkat_perkembangan&& item.tingkat_perkembangan !== fv.flt_tingkat_perkembangan)         return false;
-            if(fv.flt_media_simpan        && item.media_simpan          !== fv.flt_media_simpan)                return false;
-            if(fv.flt_kondisi_fisik       && item.kondisi_fisik         !== fv.flt_kondisi_fisik)               return false;
-            if(fv.flt_nasib_akhir_arsip   && item.nasib_akhir_arsip     !== fv.flt_nasib_akhir_arsip)           return false;
-            if(fv.flt_no_box              && !includes_ci(item.no_box,  fv.flt_no_box))                         return false;
-            if(fv.flt_jangka_simpan       && !includes_ci(item.jangka_simpan, fv.flt_jangka_simpan))           return false;
-
+            if(fv.flt_kode_klasifikasi     && !includes_ci(item.kode_klasifikasi,   fv.flt_kode_klasifikasi))    return false;
+            if(fv.flt_kurun_waktu          && !includes_ci(item.kurun_waktu,        fv.flt_kurun_waktu))         return false;
+            if(fv.flt_tingkat_perkembangan && item.tingkat_perkembangan !== fv.flt_tingkat_perkembangan)         return false;
+            if(fv.flt_media_simpan         && item.media_simpan          !== fv.flt_media_simpan)                return false;
+            if(fv.flt_kondisi_fisik        && item.kondisi_fisik         !== fv.flt_kondisi_fisik)               return false;
+            if(fv.flt_nasib_akhir_arsip    && item.nasib_akhir_arsip     !== fv.flt_nasib_akhir_arsip)           return false;
+            if(fv.flt_no_box               && !includes_ci(item.no_box,  fv.flt_no_box))                         return false;
+            if(fv.flt_jangka_simpan        && !includes_ci(item.jangka_simpan, fv.flt_jangka_simpan))           return false;
         } else if(isPersuratan){
-            if(fv.flt_unit_kerja                      && !includes_ci(item.unit_kerja,                   fv.flt_unit_kerja))                  return false;
-            if(fv.flt_kode_klasifikasi_persuratan     && !includes_ci(item.kode_klasifikasi_persuratan,  fv.flt_kode_klasifikasi_persuratan)) return false;
-            if(fv.flt_tingkat_perkembangan_persuratan && item.tingkat_perkembangan_persuratan !== fv.flt_tingkat_perkembangan_persuratan)     return false;
-            if(fv.flt_klasifikasi_keamanan            && item.klasifikasi_keamanan            !== fv.flt_klasifikasi_keamanan)                return false;
-            if(fv.flt_no_filling_cabinet              && !includes_ci(item.no_filling_cabinet,            fv.flt_no_filling_cabinet))          return false;
-            if(fv.flt_no_berkas_persuratan            && !includes_ci(item.no_berkas_persuratan,          fv.flt_no_berkas_persuratan))        return false;
-            if(fv.flt_tgl_dari && item.tgl && item.tgl < fv.flt_tgl_dari)   return false;
+            if(fv.flt_unit_kerja                      && !includes_ci(item.unit_kerja,                  fv.flt_unit_kerja))                  return false;
+            if(fv.flt_kode_klasifikasi_persuratan     && !includes_ci(item.kode_klasifikasi_persuratan, fv.flt_kode_klasifikasi_persuratan)) return false;
+            if(fv.flt_tingkat_perkembangan_persuratan && item.tingkat_perkembangan_persuratan !== fv.flt_tingkat_perkembangan_persuratan)    return false;
+            if(fv.flt_klasifikasi_keamanan            && item.klasifikasi_keamanan            !== fv.flt_klasifikasi_keamanan)               return false;
+            if(fv.flt_no_filling_cabinet              && !includes_ci(item.no_filling_cabinet,           fv.flt_no_filling_cabinet))          return false;
+            if(fv.flt_no_berkas_persuratan            && !includes_ci(item.no_berkas_persuratan,         fv.flt_no_berkas_persuratan))        return false;
+            if(fv.flt_tgl_dari   && item.tgl && item.tgl < fv.flt_tgl_dari)   return false;
             if(fv.flt_tgl_sampai && item.tgl && item.tgl > fv.flt_tgl_sampai) return false;
-
         } else {
-            if(fv.flt_jenis_arsip         && !includes_ci(item.jenis_arsip,    fv.flt_jenis_arsip))    return false;
-            if(fv.flt_tingkat_perkembangan&& item.tingkat_perkembangan !== fv.flt_tingkat_perkembangan) return false;
-            if(fv.flt_pihak_i             && !includes_ci(item.pihak_i,        fv.flt_pihak_i))        return false;
-            if(fv.flt_pihak_ii            && !includes_ci(item.pihak_ii,       fv.flt_pihak_ii))       return false;
-            if(fv.flt_media               && !includes_ci(item.media,          fv.flt_media))           return false;
-            if(fv.flt_lokasi_simpan       && !includes_ci(item.lokasi_simpan,  fv.flt_lokasi_simpan))   return false;
-            if(fv.flt_berlaku_dari  && item.tanggal_berlaku  && item.tanggal_berlaku  < fv.flt_berlaku_dari)  return false;
-            if(fv.flt_berlaku_sampai&& item.tanggal_berakhir && item.tanggal_berakhir > fv.flt_berlaku_sampai) return false;
+            if(fv.flt_jenis_arsip          && !includes_ci(item.jenis_arsip,   fv.flt_jenis_arsip))    return false;
+            if(fv.flt_tingkat_perkembangan && item.tingkat_perkembangan !== fv.flt_tingkat_perkembangan) return false;
+            if(fv.flt_pihak_i              && !includes_ci(item.pihak_i,       fv.flt_pihak_i))        return false;
+            if(fv.flt_pihak_ii             && !includes_ci(item.pihak_ii,      fv.flt_pihak_ii))       return false;
+            if(fv.flt_media                && !includes_ci(item.media,          fv.flt_media))           return false;
+            if(fv.flt_lokasi_simpan        && !includes_ci(item.lokasi_simpan, fv.flt_lokasi_simpan))   return false;
+            if(fv.flt_berlaku_dari   && item.tanggal_berlaku  && item.tanggal_berlaku  < fv.flt_berlaku_dari)   return false;
+            if(fv.flt_berlaku_sampai && item.tanggal_berakhir && item.tanggal_berakhir > fv.flt_berlaku_sampai) return false;
         }
         return true;
     });
@@ -997,8 +1057,7 @@ const filterLabels = {
     flt_media:'Media',flt_lokasi_simpan:'Lokasi',flt_berlaku_dari:'Berlaku Dari',flt_berlaku_sampai:'Berlaku Sampai',
 };
 function updateFilterTags(){
-    const fv = activeFilters;
-    const entries = Object.entries(fv);
+    const entries = Object.entries(activeFilters);
     elForm.filterTagsContainer.innerHTML = entries.map(([k,v])=>`
         <span class="filter-tag">
             ${filterLabels[k]||k}: ${v}
@@ -1006,29 +1065,26 @@ function updateFilterTags(){
         </span>`).join('');
     elForm.filterTagsContainer.querySelectorAll('.filter-tag-remove').forEach(btn=>{
         btn.addEventListener('click',()=>{
-            const key = btn.dataset.key;
-            const el  = document.getElementById(key);
+            const key=btn.dataset.key;
+            const el=document.getElementById(key);
             if(el) el.value='';
             delete activeFilters[key];
             applyFiltersAndSearch();
         });
     });
-    // update badge count
     const count = entries.length;
     const badge = document.getElementById('filterActiveCount');
-    badge.textContent = count + ' aktif';
+    badge.textContent = count+' aktif';
     badge.classList.toggle('show', count>0);
 }
 
 function updateResultsInfo(){
     const total    = allData.length;
     const filtered = filteredData.length;
-    const isFiltered = filtered < total || Object.keys(activeFilters).length>0 || elForm.searchInput.value;
     elForm.resultsInfoBar.style.display = total>0 ? 'flex' : 'none';
     document.getElementById('infoTotal').textContent    = filtered;
     document.getElementById('infoAllTotal').textContent = total;
     document.getElementById('infoFilteredFrom').style.display = (filtered<total) ? '' : 'none';
-    // showing
     const start = Math.min((currentPage-1)*perPage+1, filtered);
     const end   = Math.min(currentPage*perPage, filtered);
     document.getElementById('infoShowing').textContent = filtered===0 ? '0' : `${start}–${end}`;
@@ -1040,17 +1096,14 @@ function updateResultsInfo(){
 function renderTable(){
     if(!filteredData||filteredData.length===0){renderEmpty();return;}
 
-    const totalPages = Math.ceil(filteredData.length / perPage);
-    if(currentPage > totalPages) currentPage = totalPages;
-    const start = (currentPage-1)*perPage;
+    const totalPages = Math.ceil(filteredData.length/perPage);
+    if(currentPage>totalPages) currentPage=totalPages;
+    const start    = (currentPage-1)*perPage;
     const pageData = filteredData.slice(start, start+perPage);
 
     elForm.tableBody.innerHTML='';
-    pageData.forEach((item,idx)=>{
-        elForm.tableBody.appendChild(createRow(item, start+idx));
-    });
+    pageData.forEach((item,idx)=>elForm.tableBody.appendChild(createRow(item, start+idx)));
 
-    // Pagination footer
     elForm.tableFooter.style.display = filteredData.length>0 ? 'flex' : 'none';
     renderPaginationInfo(filteredData.length, totalPages);
     renderPaginationControls(totalPages);
@@ -1067,33 +1120,24 @@ function renderPaginationInfo(total, totalPages){
 
 function renderPaginationControls(totalPages){
     const ctrl = elForm.paginationControls;
-    ctrl.innerHTML = '';
+    ctrl.innerHTML='';
     if(totalPages<=1){ctrl.style.display='none';return;}
     ctrl.style.display='flex';
 
-    const mk = (label,page,cls='',disabled=false)=>{
-        const btn = document.createElement('button');
-        btn.className  = 'pg-btn' + (cls?' '+cls:'');
-        btn.innerHTML  = label;
-        btn.disabled   = disabled;
+    const mk=(label,page,cls='',disabled=false)=>{
+        const btn=document.createElement('button');
+        btn.className='pg-btn'+(cls?' '+cls:'');
+        btn.innerHTML=label;
+        btn.disabled=disabled;
         if(!disabled) btn.addEventListener('click',()=>{currentPage=page;renderTable();});
         return btn;
     };
 
-    // Prev
     ctrl.appendChild(mk('<i class="fas fa-chevron-left"></i>', currentPage-1, '', currentPage===1));
-
-    // Page numbers with ellipsis
-    const pages = paginationRange(currentPage, totalPages);
-    pages.forEach(p=>{
-        if(p==='…'){
-            const sp=document.createElement('span');sp.className='pg-ellipsis';sp.textContent='…';ctrl.appendChild(sp);
-        } else {
-            ctrl.appendChild(mk(p, p, p===currentPage?'active':''));
-        }
+    paginationRange(currentPage, totalPages).forEach(p=>{
+        if(p==='…'){const sp=document.createElement('span');sp.className='pg-ellipsis';sp.textContent='…';ctrl.appendChild(sp);}
+        else ctrl.appendChild(mk(p, p, p===currentPage?'active':''));
     });
-
-    // Next
     ctrl.appendChild(mk('<i class="fas fa-chevron-right"></i>', currentPage+1, '', currentPage===totalPages));
 }
 
@@ -1177,9 +1221,9 @@ function createRow(item, idx=0){
 
 function renderEmpty(){
     let colspan;
-    if(isMusnah)      colspan = canEdit ? 15 : 14;
+    if(isMusnah)          colspan = canEdit ? 15 : 14;
     else if(isPersuratan) colspan = canEdit ? 14 : 13;
-    else              colspan = canEdit ? 17 : 16;
+    else                  colspan = canEdit ? 17 : 16;
     elForm.tableBody.innerHTML=`<tr><td colspan="${colspan}">
         <div class="empty-state">
             <i class="fas fa-inbox"></i>
@@ -1208,7 +1252,7 @@ async function loadData(){
     try{
         const res=await axios.get(`/api/kategori/${kategoriId}/detail/${detailId}/tahun/${tahunId}/input`);
         if(res.data.success){
-            allData=res.data.data||[];
+            allData=[...res.data.data||[]];
             filteredData=[...allData];
             currentPage=1;
             applyFiltersAndSearch();
@@ -1287,12 +1331,7 @@ elForm.mainForm?.addEventListener('submit',async e=>{
     showLoading();
     try{
         const res=await axios.post(url,formData,{headers:{'X-CSRF-TOKEN':csrfToken}});
-        if(res.data.success){
-            showNotification(res.data.message,'success');
-            await loadStats();
-            await loadData();
-            closeModal();
-        }
+        if(res.data.success){showNotification(res.data.message,'success');await loadStats();await loadData();closeModal();}
     }catch(e){
         if(e.response?.status===422){
             const errors=e.response.data.errors;
@@ -1321,52 +1360,33 @@ async function deleteItem(id){
 /* =========================================================
    EVENT LISTENERS
    ========================================================= */
-// Filter toggle
 document.getElementById('filterToggle').addEventListener('click',()=>{
     document.getElementById('filterPanel').classList.toggle('open');
 });
-
-// Apply filter
 document.getElementById('applyFilterBtn').addEventListener('click',()=>{
-    activeFilters = getFilterValues();
+    activeFilters=getFilterValues();
     applyFiltersAndSearch();
-    // Auto close panel after apply on mobile
     if(window.innerWidth<768) document.getElementById('filterPanel').classList.remove('open');
 });
-
-// Reset filter
 document.getElementById('resetFilterBtn').addEventListener('click',()=>{
     document.querySelectorAll('.filter-input').forEach(el=>el.value='');
-    activeFilters = {};
+    activeFilters={};
     elForm.searchInput.value='';
     applyFiltersAndSearch();
 });
-
-// Search (live)
 let searchTimeout;
 elForm.searchInput?.addEventListener('input',()=>{
     clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(applyFiltersAndSearch, 250);
+    searchTimeout=setTimeout(applyFiltersAndSearch,250);
 });
-
-// Allow Enter to apply filter in filter inputs
 document.querySelectorAll('.filter-input').forEach(el=>{
     el.addEventListener('keydown',e=>{
-        if(e.key==='Enter'){
-            activeFilters = getFilterValues();
-            applyFiltersAndSearch();
-        }
+        if(e.key==='Enter'){activeFilters=getFilterValues();applyFiltersAndSearch();}
     });
 });
-
-// Per page
 elForm.perPageSelect?.addEventListener('change',e=>{
-    perPage = parseInt(e.target.value);
-    currentPage = 1;
-    renderTable();
+    perPage=parseInt(e.target.value);currentPage=1;renderTable();
 });
-
-// Modal / FAB
 if(canEdit){
     document.getElementById('addBtn')?.addEventListener('click',openAdd);
     document.getElementById('fabBtn')?.addEventListener('click',openAdd);
@@ -1382,5 +1402,138 @@ elForm.mainModal?.addEventListener('click',e=>{if(e.target===elForm.mainModal)cl
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&elForm.mainModal?.style.display==='flex')closeModal();});
 
 document.addEventListener('DOMContentLoaded',()=>{loadStats();loadData();});
+
+/* =========================================================
+   IMPORT EXCEL
+   ========================================================= */
+let importFile = null;
+const importModal    = document.getElementById('importModal');
+const doImportBtn    = document.getElementById('doImportBtn');
+const filePreview    = document.getElementById('filePreview');
+const importProgress = document.getElementById('importProgress');
+
+document.getElementById('importBtn')?.addEventListener('click',()=>{
+    clearImportFile();importModal.style.display='flex';
+});
+document.getElementById('closeImportBtn')?.addEventListener('click',closeImportModal);
+document.getElementById('cancelImportBtn')?.addEventListener('click',closeImportModal);
+importModal?.addEventListener('click',e=>{if(e.target===importModal)closeImportModal();});
+
+function closeImportModal(){importModal.style.display='none';clearImportFile();}
+function handleFileSelect(input){if(input.files&&input.files[0])setImportFile(input.files[0]);}
+function handleDrop(e){
+    e.preventDefault();
+    document.getElementById('dropZone').style.borderColor='rgba(107,70,193,.3)';
+    document.getElementById('dropZone').style.background='rgba(255,255,255,.6)';
+    const file=e.dataTransfer.files[0];
+    if(file&&(file.name.endsWith('.xlsx')||file.name.endsWith('.xls'))){setImportFile(file);}
+    else showNotification('Hanya file .xlsx atau .xls yang diterima','error');
+}
+function setImportFile(file){
+    importFile=file;
+    document.getElementById('fileName').textContent=file.name;
+    document.getElementById('fileSize').textContent=(file.size/1024).toFixed(1)+' KB';
+    filePreview.style.display='flex';
+    document.getElementById('dropText').textContent='File terpilih — klik untuk ganti';
+    doImportBtn.disabled=false;doImportBtn.style.opacity='1';doImportBtn.style.cursor='pointer';
+}
+function clearImportFile(){
+    importFile=null;
+    document.getElementById('importFile').value='';
+    filePreview.style.display='none';
+    document.getElementById('dropText').textContent='Klik atau drag & drop file Excel di sini';
+    doImportBtn.disabled=true;doImportBtn.style.opacity='0.5';doImportBtn.style.cursor='not-allowed';
+    importProgress.style.display='none';
+    document.getElementById('progressBar').style.width='0%';
+}
+
+doImportBtn?.addEventListener('click',async()=>{
+    if(!importFile)return;
+    importProgress.style.display='block';
+    doImportBtn.disabled=true;doImportBtn.style.opacity='0.5';
+
+    let pct=0;
+    const progressBar=document.getElementById('progressBar');
+    const progressText=document.getElementById('progressText');
+    const ticker=setInterval(()=>{
+        if(pct<85){pct+=Math.random()*12;progressBar.style.width=Math.min(pct,85)+'%';}
+    },300);
+
+    try{
+        const fd=new FormData();
+        fd.append('file',importFile);
+        fd.append('_token',csrfToken);
+        const res=await axios.post(
+            `/api/kategori/${kategoriId}/detail/${detailId}/tahun/${tahunId}/import`,
+            fd,{headers:{'Content-Type':'multipart/form-data'}}
+        );
+        clearInterval(ticker);
+        progressBar.style.width='100%';
+        progressText.textContent='Selesai!';
+
+        if(res.data.success){
+            const skippedCount=res.data.skipped_count||0;
+            const skippedItems=res.data.skipped_items||[];
+            setTimeout(async()=>{
+                closeImportModal();
+                await loadStats();
+                await loadData();
+                showNotification(res.data.message, skippedCount>0?'warning':'success');
+                if(skippedCount>0) showSkippedPanel(skippedItems);
+            },800);
+        } else {
+            showNotification(res.data.message||'Import gagal','error');
+            doImportBtn.disabled=false;doImportBtn.style.opacity='1';
+        }
+    }catch(e){
+        clearInterval(ticker);
+        showNotification(e.response?.data?.message||'Terjadi kesalahan saat import','error');
+        progressText.textContent='Gagal.';
+        doImportBtn.disabled=false;doImportBtn.style.opacity='1';
+    }
+});
+
+/* =========================================================
+   PANEL DUPLIKAT
+   ========================================================= */
+function showSkippedPanel(items){
+    const old=document.getElementById('skippedPanel');
+    if(old) old.remove();
+    const panel=document.createElement('div');
+    panel.id='skippedPanel';
+    panel.style.cssText=`
+        position:fixed;bottom:90px;right:32px;z-index:3000;
+        background:#FFFBEB;border:1.5px solid #D97706;border-radius:16px;
+        box-shadow:0 8px 32px rgba(217,119,6,.25);
+        max-width:440px;width:calc(100vw - 64px);
+        animation:slideInRight .4s cubic-bezier(.22,1,.36,1) both;
+        overflow:hidden;`;
+    const listHtml=items.slice(0,10).map(item=>`
+        <li style="padding:5px 0;border-bottom:1px solid rgba(217,119,6,.12);font-size:12px;color:#92400E;line-height:1.4;">
+            <i class="fas fa-minus-circle" style="color:#D97706;margin-right:6px;font-size:10px;"></i>${item}
+        </li>`).join('');
+    const moreText=items.length>10
+        ?`<p style="font-size:11px;color:#B45309;margin-top:8px;font-style:italic;">... dan ${items.length-10} data lainnya tidak diimport.</p>`:'';
+    panel.innerHTML=`
+        <div style="background:linear-gradient(135deg,#D97706,#F59E0B);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;">
+            <div style="display:flex;align-items:center;gap:8px;">
+                <i class="fas fa-exclamation-triangle" style="color:#fff;font-size:14px;"></i>
+                <span style="color:#fff;font-weight:700;font-size:13px;">${items.length} Data Dilewati (Duplikat)</span>
+            </div>
+            <button onclick="document.getElementById('skippedPanel').remove()"
+                style="background:rgba(255,255,255,.25);border:none;color:#fff;width:24px;height:24px;border-radius:6px;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div style="padding:14px 16px;">
+            <p style="font-size:12px;color:#92400E;margin-bottom:10px;line-height:1.5;">
+                Baris berikut <strong>tidak diimport</strong> karena uraian informasinya sudah ada di database:
+            </p>
+            <ul style="list-style:none;padding:0;margin:0;max-height:200px;overflow-y:auto;">${listHtml}</ul>
+            ${moreText}
+        </div>`;
+    document.body.appendChild(panel);
+    setTimeout(()=>{if(panel.parentNode)panel.remove();},15000);
+}
 </script>
 @endsection
